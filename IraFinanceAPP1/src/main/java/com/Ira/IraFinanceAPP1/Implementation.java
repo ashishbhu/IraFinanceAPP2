@@ -48,6 +48,7 @@ public class Implementation{
 		    					{
 		    						jo.put("uname", "null");
 		    						jo.put("check", "mexist");
+		    						logger.error("mobile number exist");
 		    						return jo.toString();
 		    					}
 		    						
@@ -69,6 +70,7 @@ public class Implementation{
 			} 
 			catch(Exception e)
 				{	flag=3;
+				
 					System.out.println(e);
 				    
 				}
