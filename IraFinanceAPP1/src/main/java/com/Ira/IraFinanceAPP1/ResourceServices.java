@@ -16,36 +16,77 @@ public class ResourceServices {
 	
 	
 
-/*1------------OK----- FOR REGISTER NEW USER----------------------------- */
+/*1------------OK--------------------- FOR REGISTER NEW USER---------------------------------------- */
 	
-	@GET
+	@POST
 	@Path("create")
 	@Consumes(MediaType.APPLICATION_JSON)
-   
-	public String createUser(@QueryParam("pass") String pswd,
-							@QueryParam("shop") String shopname,@QueryParam("add") String address,
-							@QueryParam("mnum") String mobilenumber,@QueryParam("email") String emailid,
-							@QueryParam("gstn") String gstnumber,@QueryParam("accl") String acctlocked,
-			 				@QueryParam("sdate") String substartdate,@QueryParam("edate") String subenddate) 
+	@Produces(MediaType.APPLICATION_JSON)
+	public String createUser(String customerdetail) 
     {
 		
     	
-    	RegisterUser userdetails=new RegisterUser();
-    	
-    	userdetails.setPassword(pswd);
-    	userdetails.setShopname(shopname);
-    	userdetails.setAddress(address);
-    	userdetails.setMobilenumber(mobilenumber);
-    	userdetails.setEmailid(emailid);
-    	userdetails.setGstnumber(gstnumber);
-    	userdetails.setAcctlocked(acctlocked);
-    	userdetails.setSubstartdate(substartdate);
-    	userdetails.setSubenddate(subenddate);
-    	
     	BusinessLogic bl=new BusinessLogic();   	
     	
-    		return bl.create(userdetails);
+    		return bl.create(customerdetail);
     
 	}
+	
+	
+/*2---------------ok---------------FOR LOGIN USER--------------------------------------------------------*/	
+	
+	@POST
+	@Path("login")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String loginUser(String logindetail)
+	{
+		
+		BusinessLogic bl=new BusinessLogic();  
+		return bl.getLoginUser(logindetail);
+		
+		
+	}
+	
+	
+/*3.------------ok---------------------FORGET USER NAME-------------------------------------------------------*/
+	
+	 
+	   @GET
+	   @Path("forgetuser")
+	   @Produces(MediaType.APPLICATION_JSON)
+	   @Consumes(MediaType.APPLICATION_JSON)
+	   public String forgetUser(@QueryParam("mobile") String mobile)
+	   {
+		   BusinessLogic bl=new BusinessLogic();  
+		   return bl.getForgetUser(mobile);
+	   }
+	
+/*4.-----------ok-----------------------FORGET PASSWORD--------------------------------------------------------*/	
+		
+	   @GET
+	   @Path("forgetpassword")
+	   @Consumes(MediaType.APPLICATION_JSON)
+	   @Produces(MediaType.APPLICATION_JSON)
+	   public String forgetPassword(@QueryParam("user") String username)
+	   {
+		   BusinessLogic bl=new BusinessLogic();
+		   return bl.getForgetPassword(username);
+	
+	   }
+	   
+	   
+	   
+/*5.---------ok------------------------TEMP PASSWORD--------------------------------------------------------*/
+	   
+	   @POST
+	   @Path("temppass")
+	   @Consumes(MediaType.APPLICATION_JSON)
+	   public String tempPassword(String temppass)
+	   {
+		   BusinessLogic bl=new BusinessLogic();
+		   return bl.getTempPassword(temppass);
+	   }	   
+	   
+	   
     
 }   
