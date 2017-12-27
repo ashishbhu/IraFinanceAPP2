@@ -87,6 +87,85 @@ public class ResourceServices {
 		   return bl.getTempPassword(temppass);
 	   }	   
 	   
+	
+/*6.----------ok-----------------------RESET PASSWORD----------------------------------------------------*/
 	   
-    
+	   @POST
+	   @Path("resetpass")
+	   @Consumes(MediaType.APPLICATION_JSON)
+	   public String resetPassword(String resetpass)
+	   {
+		   BusinessLogic bl=new BusinessLogic();
+		   return bl.resetPassword(resetpass);
+	   }
+	   	   
+	
+	   
+/*7.----------ok---------------------SUB USER REGISTRATION--------------------------------------------*/
+	   
+	   @POST
+	   @Path("csuser")
+	  
+	   @Consumes(MediaType.APPLICATION_JSON)
+	   public String createSubUser(String subuser)
+	   {
+		   BusinessLogic bl=new BusinessLogic();
+		   return bl.createSubUser(subuser);
+	   }	   
+	   
+
+	   
+/*8.-------------------------OK----------GET ALL SUB USER NAME BY MAIN USER NAME-----------------------------*/
+	  
+	   @GET
+	   @Path("allsubuser")
+	   @Produces(MediaType.APPLICATION_JSON)
+	   public String getAllSubUser(@QueryParam("user") String username)
+	   {
+		   BusinessLogic bl=new BusinessLogic();
+		   return bl.getAllSubUser(username);
+	   }
+	  	   
+
+/*9.-------ok----------------------------GET SUB USER ACCESS by SUB USER NAME--------------------------------------------*/	   
+	   
+		
+	   @GET
+	   @Path("getsubuseraccess")
+	   //@Consumes(MediaType.APPLICATION_JSON)
+	   @Produces(MediaType.APPLICATION_JSON)
+	   public String getSubUserAccess(@QueryParam("user") String username)
+	   {
+		   BusinessLogic bl=new BusinessLogic();
+		   return bl.getSubUserAccess(username);
+	   }
+
+	   
+/*10------------------OK-----------FOR EDIT SUB USER ACCESS----------------------------------------------------*/
+	   
+	   @PUT
+	   @Path("editsubuseraccess")
+	   @Consumes(MediaType.APPLICATION_JSON)
+	   @Produces(MediaType.APPLICATION_JSON)
+	   public String editSubUserAccess(String editsubuser)
+	   {
+		   BusinessLogic bl=new BusinessLogic();
+		   return bl.editSubUserAccess(editsubuser);
+	   }	   
+  
+/*11.----------------------------Shrink Item--------------------------------*/ 
+	   
+	   @POST
+	   @Path("additem")
+	   @Consumes(MediaType.APPLICATION_JSON)
+	   @Produces(MediaType.APPLICATION_JSON)
+	   public String  addItem(String item)
+	   {
+		   //System.out.println(item);
+		   BusinessLogic bl=new BusinessLogic();
+		   return bl.getAddItem(item);
+		   
+	   }	   
+	   
+	   
 }   

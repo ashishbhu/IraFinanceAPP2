@@ -40,7 +40,7 @@ public class DatabaseConnection {
 						}
 					catch(SQLException e)
 				    {
-						logger.error("error: adress, user, password?");
+						logger.error("error: url or user or password?");
 						
 				    }
 				    catch(Exception e)

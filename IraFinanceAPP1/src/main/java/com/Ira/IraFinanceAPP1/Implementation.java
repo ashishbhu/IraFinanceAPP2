@@ -848,15 +848,609 @@ public class Implementation{
 				    	}
 				    	catch(Exception e)
 				    	{
-				    		logger.error("In temp password service:");
+				    		logger.error("In temp password service: error in closing preparestatement and connection at the time of set user name and passwors");
 				    	}
 				    }
 			
 					return "success";
 			}	
 	
+/*6.----------ok-----------------------RESET PASSWORD----------------------------------------------------*/	
 	
 	
+	public String getResetPassword(String user,String pass)
+	{
+		
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+	
+		Statement st=null;
+		ResultSet rs=null;
+		
+		int flag=0;
+		
+			String rege="select subid from registration";
+		
+				try
+					{
+						 st=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+						 rs=st.executeQuery(rege);
+						
+						/*-------CHECKING FOR MAIN USER-----*/ 
+							while(rs.next())
+							{
+								if(rs.getString(1).equals(user))/*--Checking user name exist in registration table or not---*/
+									{
+										 flag=1;
+										String rg="update registration set pswd=? where subid=?";
+										String lc="update logincontrol set pswd=? ,forcechgpwd=? where username=?";
+	    		
+										PreparedStatement ps=null;
+										PreparedStatement fcp=null;
+										try
+											{
+	    			
+	    			
+											
+											 ps = con.prepareStatement(rg);
+										     fcp = con.prepareStatement(lc);
+	    		
+											ps.setString(1, pass);
+											ps.setString(2, user);
+	    		
+											fcp.setString(1, pass);
+											fcp.setString(2, "false");
+											fcp.setString(3, user);
+	    		
+											ps.executeUpdate();
+											fcp.executeUpdate();
+	    	      
+											}
+										catch(SQLException e)
+										{
+											logger.error("In reset password service: error in prepare statement at the time of checking user exist in register table");
+										}
+										catch(Exception e)
+											{
+												logger.error("In reset password service: error  at the time of checking user exist in register table");
+												
+											}
+										finally
+										{
+										    ps.close();
+										    fcp.close();
+										}
+										
+	    		
+									}
+							}
+							
+							if(flag==0)
+								return "unoexist";
+							
+					}
+
+			    	/*--------Main Exception-------*/
+				catch(SQLException e)
+				{
+					logger.error("In reset password service: error in create statement or result set");
+				}
+				catch(Exception e)
+						{ 
+							logger.error("In reset password service: error");
+						}
+				finally
+				{
+					try
+					{
+					st.close();
+					rs.close();
+					con.close();
+					}
+					catch(Exception e)
+					{
+						logger.error("In reset password service: error at the time of closing statement or resultset or connection");
+					}
+				}
+						return "reset";
+				
+		
+	}
+	
+
+	
+/*7.----------ok------------------------SUB USER REGISTRATION----------------------------------------------------*/		
+	
+	public String createSubUser(RegisterSubUser subuser )
+		{ 
+		
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+			
+			
+			 
+			int subid=0 ,flag=0;
+
+			
+			
+			String mu="select  *from registration where subid="+subuser.getMainuser();
+			Statement st=null;
+			ResultSet rs=null;
+			
+			try  /*----checking parent user exist or not---*/
+			{
+				st=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+				rs=st.executeQuery(mu);
+				
+				
+				//System.out.println(rs.getString(1));
+				if(rs.next()==false)
+					return "pnotexist";
+			}
+			catch(SQLException e)
+			{
+				logger.error("In sub user register service :error in creating statement and resultset at the time of checking parent user existance");
+			}
+			catch(Exception e)
+			{
+				logger.error("In sub user register service :error at the time of checking parent user existance");
+			}
+			finally 
+			{
+				try
+				{
+				st.close();
+				rs.close();
+				}
+				catch(Exception e)
+				{
+					logger.error("In sub user register service :error in closing statement and resultset at the time of checking parent user existance");
+				}
+				
+			}
+			
+
+			
+			
+			String control="select  childUserName from subuser";  /*-checking sub user already exist or not--*/
+				try
+					{
+						 st=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+						 rs=st.executeQuery(control);
+						
+						while(rs.next())
+							if(rs.getString(1).equals(subuser.getSubuser()))
+								return "subexist";
+					}
+					catch(SQLException e)
+					{
+					
+						logger.error("In sub user Register service :error in create statement or resultset at the time of checking sub user existance");
+					}
+					catch(Exception e)
+					{   
+						logger.error("In sub user Register service :error at the time of checking sub user existance");
+					}
+					finally
+					{
+						try
+						{
+						rs.close();
+						st.close();
+						}
+						catch(Exception e)
+						{
+							
+							logger.error("In sub user register service :error in closing statement and resultset at the time of checking sub user existance");
+						}
+					}
+
+				
+			
+				
+				  /*----------inserting details in sub user table and login control----*/
+				String su="insert into subuser values(?,?,?,?,?,?,?,?)";
+
+				String log="insert into logincontrol values(?,?,?,?,?,?,?)";
+				
+				PreparedStatement ps=null;
+				PreparedStatement ps1=null;
+				
+				try {
+						ps=con.prepareStatement(su);
+						ps1=con.prepareStatement(log);
+
+						ps.setString(1, subuser.getMainuser());
+						ps.setString(2, subuser.getSubuser());
+						ps.setString(3, subuser.getPass());
+						ps.setString(4, "false");
+						ps.setString(5, subuser.getSubstsrtdate());
+						ps.setString(6, subuser.getSubenddate());
+						ps.setString(7, "true");
+						ps.setInt(8, subuser.getAccess());
+
+						ps1.setString(1, subuser.getSubuser());
+						ps1.setString(2, subuser.getPass());
+						ps1.setString(3, "false");
+						ps1.setString(4, "true");
+						ps1.setInt(5, subuser.getAccess());
+						ps1.setString(6, "true");
+						ps1.setString(7, subuser.getMainuser());
+		
+						ps.executeUpdate(); 
+						ps1.executeUpdate();
+					}
+					catch(SQLException e)
+					{
+						logger.error("In sub user register service :error in preparestatement at the time of inserting details in sub user and logincontrol table");
+					}
+					catch(Exception e)
+					{   logger.error("In sub user register service :error at the time of inserting details in sub user and logincontrol talbe");
+					}
+					finally
+					{
+						try
+						{
+						ps.close();
+						ps1.close();
+						con.close();
+						}
+						catch(Exception e)
+						{
+							logger.error("In sub user register service :error in closing preparestatment and connection after sub user registration");
+						}
+					}
+				
+						return "success";
+		}		
+
+
+/*8.-------------------------OK----------GET ALL SUB USER NAME BY MAIN USER NAME-----------------------------*/
+
+		public String getAllSubUser(String username)
+		{
+	
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+			
+			
+		
+			JSONObject jo = new JSONObject();
+			JSONArray ja = new JSONArray();
+		
+				try {
+					jo.put("subusername", ja);
+					}
+				catch (JSONException e1) 
+				{
+					logger.error("In all sub user services: error in JSON object");
+				}
+		
+		
+		      /*-------checking existance of main user in register table--*/
+		
+				String main="select subId from registration where subid="+username;
+				Statement st=null;
+				ResultSet rs=null;
+				try
+					{
+			
+						 st=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+						 rs=st.executeQuery(main);
+						 
+						 if(rs.next()==false)
+							 return "munotexist";
+					}
+				catch(SQLException e)
+				{
+					logger.error("In all sub user name service: error in create statement or result at the time of checking parent user exist or not");
+				}
+				catch(Exception e)
+					{
+					logger.error("In all sub user name service: error at the time of checking parent user exist or not");
+						
+					}
+				finally
+				{
+					try
+					{
+					rs.close();
+					st.close();
+					}
+					catch(Exception e)
+					{
+						logger.error("In all sub user name service: error in closing result set or create statement at the time of checking parent user exist or not");
+					}
+				}
+		
+		
+		
+		
+		      /*----Fetching all user name from subuser table using main user subid--*/
+		
+				String sub = "select subId,childUserName from subuser where subId="+username;
+				Statement st1=null;	
+				ResultSet rs1=null;
+				try
+					{
+			
+						st1=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+					    rs1=st1.executeQuery(sub);
+					    
+					    if(rs1.next()==false)
+					    {
+					    	ja.put("null");
+					    	return jo.toString();
+					    	
+					    }
+					    else
+					    {
+					    	rs1.previous();
+					    	while(rs1.next())
+								{
+								
+									if(username.equals(rs1.getString(1))) 
+										{
+	    		
+	    		
+											ja.put(rs1.getString(2));
+	        
+	            
+										}
+	    	
+								}
+	    	
+					    }
+					}
+				catch(SQLException e)
+				{
+					logger.error("In all sub user services: error in create statement or result set at the time of fetching all sub user");
+				}
+				catch(Exception e)
+					{
+						
+					logger.error("In all sub user services: error at the time of fetching all sub user");
+						
+					}
+				finally
+				{
+					try
+					{
+					rs1.close();
+					st1.close();
+					con.close();
+					}
+					catch(Exception e)
+					{
+						logger.error("In all sub user services: error in closing resultset or statement or connection at the time of fetching all sub user");
+					}
+				}
+				
+
+					return jo.toString();
+		
+		
+		
+	}
+
+/*9.-------ok----------------------------GET SUB USER ACCESS by SUB USER NAME--------------------------------------------*/	
+
+
+		public String getSubUserAccess(String username)
+		{
+			
+			
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+			
+			String subuser="'"+username+"'";
+			int flag=0;
+			String suser="select childUserName from subuser where childUserName="+subuser;;
+			String slogin="select *from logincontrol";
+		 
+		 
+			JSONObject jo=new JSONObject();
+			
+			Statement st=null;
+			Statement st1=null;
+			ResultSet rs=null;
+			ResultSet rs1=null;
+				try
+					{
+						 st=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+					 
+						 rs=st.executeQuery(suser);
+	     
+						 st1=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+						 rs1=st1.executeQuery(slogin);
+						
+						 if(rs.next()==false)/*--checking sub user exist or not--*/
+						 {
+							 	jo.put("check","sunotexist");
+								jo.put("accl", "null");
+								jo.put("access","null");
+					 
+					
+								return jo.toString();
+							 
+						 }
+						 
+						 //rs.previous();
+						while(rs.next())
+							if(rs.getString(1).equals(username))/*--when subuser exist--*/
+								{    
+									flag=1;
+									break;
+								}
+						
+						if(flag==1)
+							{
+								while(rs1.next())
+									if(rs1.getString(1).equals(username))
+										if(rs1.getString(3).equals("false"))/*--when accl is not lock--*/
+											{   flag=2;
+	    		
+												jo.put("check","suexist");
+												jo.put("accl", "false");
+												jo.put("access", rs1.getString(5));
+	    			 
+												//return jo.toString(); /*--when sub user exist and accl not lock--*/
+											}
+							}
+	     	
+	     	
+					}
+				catch(SQLException e)
+				{
+					logger.error("In get sub user access service: error in create statement or resultset at the time checking of sub user detail");
+				}
+				catch(Exception e)
+				{   
+					logger.error("In get sub user access service: error at the time checking of sub user detail");
+				}
+				finally
+				{
+					
+					try
+					{
+					rs.close();
+					rs1.close();
+					st.close();
+					st1.close();
+					con.close();
+					}
+					catch(Exception e)
+					{
+						logger.error("In get sub user access service: error in closing  statement or resultset or connection at the time checking of sub user detail");
+					}
+				}
+		 
+				
+				if(flag==1)
+					{
+						try
+						{
+						jo.put("check","suexist");
+						jo.put("accl", "true");
+						jo.put("access","null"); 
+			 
+		 
+						return jo.toString();/*--when sub user exist but accl is lock--*/
+						}
+						catch(Exception e)
+						{
+							logger.error("In get sub user access service: error in JSON object when sub user exist but accl lock");		
+						}
+					}	
+				
+				return jo.toString(); /*--when sub user exist and accl not lock--*/
+	
+		}
+
+		
+/*10------------------OK-----------FOR EDIT SUB USER ACCESS----------------------------------------------------*/		
+		
+	
+		public String editSubUserAccess(String subuser,String pass,int access)
+		{
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+			
+			int flag=0,temp=0;
+			String newsubuser="'"+subuser+"'";
+			Statement st=null;
+			ResultSet rs=null;
+			
+				
+			
+			//System.out.println(pass+access);
+					try  /*---checking sub user exist or not---*/
+					{
+						String sub="select childUserName from subuser where  childUserName="+newsubuser;
+						 st=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+						
+						 rs=st.executeQuery(sub);
+						  
+						if(rs.next()==false)
+							 return "uincorrect";
+							 
+					
+				
+					}
+					catch(SQLException e)
+					{
+						logger.error("In edit sub user access service: error in create statement or result set at the time of checking sub user existance");
+					}
+					catch(Exception e)
+					{
+						logger.error("In edit sub user access service: error at the time of checking sub user existance");
+					
+					}
+					finally
+					{
+						try
+						{
+						rs.close();
+						//st.close();
+						}
+						catch(Exception e)
+						{
+							logger.error("In edit sub user access service: error at the time of closing create statement or result set");
+						}
+						
+					}
+				
+					/*--edit sub user access--*/
+					
+				String sub1="update subuser set childPassword=?, access=? where childUserName=?";
+				String login="update logincontrol set pswd=?,access=? where userName=?";	
+			
+				PreparedStatement ps =null;
+				PreparedStatement ps1 =null;
+				try
+				{
+				     ps = con.prepareStatement(sub1);
+					 ps1 = con.prepareStatement(login);
+			
+					ps.setString(1, pass);
+					ps.setInt(2, access);
+					ps.setString(3, subuser);
+			
+					ps1.setString(1, pass);
+					ps1.setInt(2, access);
+					ps1.setString(3, subuser);
+			
+					ps.executeUpdate();
+					ps1.executeUpdate();
+				}
+				catch(SQLException e)
+				{
+					logger.error("In edit sub user access service: error in prepare statement at the time of edit sub user access");
+				}
+				catch(Exception e)
+				{
+					logger.error("In edit sub user access service: error at the time of edit sub user access");
+				}
+				finally
+				{
+					
+					try
+					{
+						ps.close();
+						ps1.close();
+						con.close();
+					}
+					catch(Exception e)
+					{
+						logger.error("In edit sub user access service: error at the time of closing preparestatement or connection");
+					}
+					
+				}
+			
+				return "success";
+		}		
+		
+
 }
 
 
