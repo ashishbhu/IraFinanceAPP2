@@ -406,6 +406,138 @@ public class BusinessLogic {
 		   Implementation imp=new Implementation();
 			return imp.editSubUserAccess(subuser,pass,access);
 	}
+	
+	
+	
+	
+/*11.------------ok-------------------Synch Item----------------------------------------------------------------*/	
+
+	public String addItem(String item)
+	{
+		String id=null;
+		
+		try
+		{
+		JSONObject obj=new JSONObject(item);
+		
+		 id=obj.getString("subid");
+		}
+		catch(Exception e)
+		{
+			logger.error("In shrink item service: error in JSON object object at the time of parsing subid");
+			
+		}
+		
+		logger.info("In shrink item service: you are trying to synck item in main item table with subid: "+id);
+		
+		
+		Implementation imp=new Implementation();
+		return imp.addItem(item);
+	}
+
+	
+/*12.----------ok----------------GET ITEM DETAIL BY SUB ID WHICH ITEM IS ACTIVE------------------------------------------*/	
+
+	public String getAllItem(String id)
+	{
+		
+		if(id.isEmpty())
+			return "You must enter sub id";
+		if(id.length()>10)
+			return "Subid can't be graeter than 10 digits";
+		
+		logger.info("In Item Detail Service: you are trying to see all item detail by subid: "+id);
+		
+		Implementation imp=new Implementation();
+		return imp.getAllItem(id);
+		
+	}
+	
+/*13.----------ok--------------LOGin DETAIL BY USER NAME------------------------------------------------------------------*/	
+
+	public String getLoginDetail(String username)
+	{
+		
+		
+		if(username.isEmpty())
+			return "You must enter username";
+		if(username.length()>10)
+			return "username can't be greater than 10 character";
+		
+		logger.info("In Login Detail Service: you are trying to see user detail of :"+username);
+		
+		Implementation imp=new Implementation();
+		return imp.getLoginDetail(username);
+	}
+
+
+	
+/*14.------ok------------------DETAILS OF REPORT by Date-------------------------------------------------------------------*/	
+	
+	public String getReportHDR(String date1,String date2)
+	{
+		
+		if(date1.isEmpty() && date2.isEmpty())
+			return "You must enter dates";
+		
+		logger.info("In Details of Report Service by Date: You are trying to see invoice_hdr detail within date: "+date1+" and " + date2);
+		
+		Implementation imp=new Implementation();
+		
+		return imp.getReportHDR(date1,date2);
+		
+	}
+
+/*15.------ok--------------DETAILS OF REPORT By INVOICE_ID----------------------------------------------------------------*/
+
+	public String getInvoiceDetail(String invoiceid)
+	{
+		
+		
+		if(invoiceid.isEmpty())
+			return "You must enter invoice id";
+		if(invoiceid.length()>12)
+			return "Invoice id can't be greater than 12 character";
+		
+		logger.info("In Detail of Invoice id Service by Invoice id: you are trying to see invoice_hdr detail by invoice id");
+		
+		Implementation imp=new Implementation();
+		return imp.getInvoiceDetail(invoiceid);
+	}
+	
+
+/*16.--------ok-----------------GETING CUSTOMER DETAIL from Invoice_hdr BY MOBILE NUMBER--------------------------------*/	
+	
+	
+	public String getCustomerDetails(String mobile)
+	{
+		if(mobile.isEmpty())
+			return "You must enter mobile number";
+		if(mobile.length()>10)
+			return "mobile number can't be greater than 10 digit";
+		
+		
+		logger.info("In Geting customer invoice_hdr service by mobile: you are trying to see customer invoice_hdr detail by mobile number");
+		Implementation imp=new Implementation();
+		return imp.getCustomerDetails(mobile);
+	}
+	
+
+	
+/*17.----------ok---------------SYNCH INVOICE----------------------------------------------------------------------------*/	
+	
+	public String setInvoice_hdr_Line(String item)
+	{
+		
+		
+		logger.info("In Synch Invoice Servoice: you are trying to synch invoice detail");
+		
+		Implementation imp=new Implementation();
+		
+		return imp.setInvoice_hdr_Line(item);
+		
+		
+	}
 
 }
 

@@ -305,11 +305,12 @@ public class Implementation{
 /*2-------------------------------------------FOR LOGIN USER----------------------------------------------------------------*/		
 		
 
-		public String loginUser(String username,String password)
+		public String loginUser(String user,String password)
 		{
 			DatabaseConnection db=new DatabaseConnection();
 			Connection con=db.getConnection();
 			
+			String username="'"+user+"'";
 				int flag=0,temp=0;
 			//System.out.println("2.Login");
 	 
@@ -1451,7 +1452,1057 @@ public class Implementation{
 		}		
 		
 
+		
+/*11.------------ok----------------------Synch Item------------------------------------------------------------------*/			
+		
+		public String addItem(String str)
+		{
+			
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+					
+			int flag=0;
+			int temp=0;
+			int count=0,addnew=0;
+			//String str="{\"subid\":[1000],\"itemid\":[AF1],\"itemname\":[APPLE],\"itemprice\":[20],\"measurement\":[per kg],\"itemcategory\":[Fruit],\"gstcategory\":[igst],\"startdate\":[2017-12-16],\"enddate\":[2018-12-16],\"count\":[0],\"version\":[1]}";
+			
+			
+			
+			
+			
+			
+			
+			/*--------------------selecting last item in item table--------------*/
+			
+			String key="select max(id) from itemmain";
+			
+				Statement st=null;
+				ResultSet rs=null;
+				
+				try
+				{
+					st=con.createStatement();
+					rs=st.executeQuery(key);
+					rs.next();
+					temp=rs.getInt(1);
+					System.out.println(temp);
+			
+				}
+				catch(SQLException e)
+				{
+					logger.error("In Synch item service :error in creating statement or resultset at the time of selecting last item in item table");
+				}
+				catch(Exception e)
+				{
+					logger.error("In Synch item service :error at the time of selecting last item in item table");
+				}
+				finally
+				{
+					try
+					{
+					st.close();
+					rs.close();
+					}
+					catch(Exception e)
+					{
+						logger.error("In Synch item service :error in closing statement or resultset at the time of selecting last item in item table");
+						
+					}
+				}
+			
+			
+			
+			/*------------------------inserting data into itemmain-------------------*/
+			
+			
+			
+			try
+			{
+				//System.out.println(str);
+				JSONObject obj=new JSONObject(str);
+				
+				
+				JSONArray arr = obj.getJSONArray("subid");
+				JSONArray arr1 = obj.getJSONArray("itemid");
+				JSONArray arr2= obj.getJSONArray("itemname");
+				JSONArray arr3 = obj.getJSONArray("itemprice");
+				JSONArray arr4 = obj.getJSONArray("measurement");
+				JSONArray arr5 = obj.getJSONArray("itemcategory");
+				JSONArray arr6 = obj.getJSONArray("gstcategory");
+				JSONArray arr7 = obj.getJSONArray("startdate");
+				JSONArray arr8 = obj.getJSONArray("enddate");
+				JSONArray arr9 = obj.getJSONArray("count");
+				JSONArray arr10 = obj.getJSONArray("version");
+				
+			
+			    String itemtable="select itemid,version,enddate from itemmain";
+			
+			   
+			    String s="insert into itemmain (subId,itemid,itemname,itemprice,measurement,itemcategory,gstcategory,startdate,enddate,count,version) values(?,?,?,?,?,?,?,?,?,?,?)";
+				
+				
+			    
+			    
+			    for(int i=0; i<arr.length() && i<arr1.length() && i<arr2.length() && i<arr3.length() && i<arr4.length() && i<arr5.length() && i<arr6.length() && i<arr7.length() && i<arr8.length() &&i<arr9.length() &&i<arr10.length()  ; i++)
+				{
+					int iditem=0,itemversion=0,itemenddate=0;
+					
+					 
+					PreparedStatement	ps = con.prepareStatement(s);
+					Statement 	 st1=con.createStatement();
+					 ResultSet	 rs1=st1.executeQuery(itemtable);
+					
+					while(rs1.next())
+						{
+							if(rs1.getString(1).equals(arr1.getString(i)))
+							{	
+								
+								iditem=1;
+							
+								if(rs1.getString(2).equals(arr10.getString(i)))
+										itemversion=1;
+								if(rs1.getString(3).equals(arr8.getString(i)))
+											itemenddate=1;
+							
+							
+									if(iditem==1 && itemversion==1 && itemenddate==1)
+									{
+										//System.out.println("id= ver= date=");
+										break;
+									}
+							
+								
+									if(iditem==1 && itemversion==1 && itemenddate!=1)
+									{
+										
+									
+								
+										String dd=arr8.getString(i);
+										String idd=arr1.getString(i);
+										String ve=arr10.getString(i);
+										String dd1="'"+dd+"'";
+										String idd1="'"+idd+"'";
+										String ver="'"+ve+"'";
+									
+									String up="update itemmain set enddate="+dd1 +"where itemid="+idd1 + "and version="+ver;
+								
+									 PreparedStatement ps2 = con.prepareStatement(up);
+								
+								
+									ps2.executeUpdate();
+								    
+									count=0;
+									
+									break;
+								}
+							
+								if(iditem==1 && itemversion!=1)
+									{
+									
+									count=1;
+									
+									
+									}
+							
+							}
+					
+				}
+					
+					
+						if(count==1 || iditem==0 )
+						{
+							
+							
+							ps.setInt(1,arr.getInt(i));
+							ps.setString(2, arr1.getString(i));
+							ps.setString(3, arr2.getString(i));
+							ps.setString(4, arr3.getString(i));
+							ps.setString(5, arr4.getString(i));
+							ps.setString(6, arr5.getString(i));
+							ps.setString(7, arr6.getString(i));
+							ps.setString(8, arr7.getString(i));
+							ps.setString(9, arr8.getString(i));
+							ps.setString(10, arr9.getString(i));
+							ps.setString(11, arr10.getString(i));
+					
+					
+							ps.executeUpdate();
+						}
+				
+				}
+			}
+			catch(JSONException e)
+			{
+				System.out.println(e);
+				logger.error("In Synch item service :error in JSON object at the time parsing data in item table");
+			}
+			catch(SQLException e)
+			{
+				System.out.println(e);
+				logger.error("In Synch item service :error in creating statement or resultset or preparestatment at the time of inserting data");
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+				logger.error("In Synch item service :error  at the time of inserting data in item table");
+				flag=1;	
+				
+			}
+			
+				
+			
+		
+				
+			
+			/*-----------------------delete data if failed----------------*/
+			PreparedStatement ps3=null;
+			if(flag==1)
+			{
+				String del="delete from itemmain where id>"+temp;
+				
+				try
+				{
+				 ps3 = con.prepareStatement(del);
+				
+				ps3.executeUpdate();
+				}
+				catch(SQLException e)
+				{
+					logger.error("In Synch item service :error in  preparestatment at the time of deleting data if synch failed");
+				}
+				catch(Exception e)
+	 			{
+					logger.error("In Synch item service :error at the time of deleting data if synch failed");
+				}
+				finally
+				{
+					try
+					{
+					ps3.close();
+					con.close();
+					}
+					catch(Exception e)
+					{
+						logger.error("In Synch item service :error in closing connection or preparestatement at the time of deleting data if synch failed");
+					}
+				}
+			}
+			
+			
+			/*------------------Sending Responce---------------*/
+			
+			JSONObject jo=new JSONObject();
+			try
+			{
+			
+			
+				if(flag==1)
+				{
+					jo.put("check", "fail");
+					return jo.toString();
+				}
+				else
+				{
+					jo.put("check", "success");
+				}
+			
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+			}
+			
+			return	jo.toString();
+		
+			
+		}
+		
+		
+		
+/*12.--------ok------------------GET ITEM DETAIL BY SUB ID WHICH ITEM IS ACTIVE------------------------------*/		
+		
+		
+		public String getAllItem(String id)
+		{
+			
+
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+			
+			int flag=0;
+			
+			String dat="select subdate(curdate(),1) from dual";
+			
+			
+			Statement st1=null;
+			ResultSet rs1=null;
+			String datestring=null;      /*selecting current date */
+			try
+			{
+				 st1=con.createStatement();
+				 rs1=st1.executeQuery(dat); 
+				rs1.next();
+				String dat1=rs1.getString(1);
+				datestring="'"+dat1+"'";
+				
+				
+			}
+			catch(SQLException e)
+			{
+				logger.error("In Item Detail Service: error in createstatement or resultset at the time of selection current date");
+			}
+			catch(Exception e)
+			{
+				logger.error("In Item Detail Service: error at the time of selection current date");
+			}
+			finally
+			{
+				try
+				{
+					
+				st1.close();
+				rs1.close();
+				}
+				catch(Exception e)
+				{
+					logger.error("In Item Detail Service: error in closing create statement or resultset at the time of selection current date");
+				}
+			}
+			
+			
+			String itemdetail="select *from itemmain where enddate>="+datestring +"and subid="+id;
+			
+			JSONObject jo=new JSONObject();
+			Statement st=null;
+			ResultSet rs=null;
+			try										/*Fetching active item in item table*/
+			{
+					 st=con.createStatement();
+					 rs=st.executeQuery(itemdetail); 
+			
+					
+					JSONArray ja=new JSONArray();
+					JSONArray ja1=new JSONArray();
+					JSONArray ja2=new JSONArray();
+					JSONArray ja3=new JSONArray();
+					JSONArray ja4=new JSONArray();
+					JSONArray ja5=new JSONArray();
+					JSONArray ja6=new JSONArray();
+					JSONArray ja7=new JSONArray();
+					JSONArray ja8=new JSONArray();
+					JSONArray ja9=new JSONArray();
+					JSONArray ja10=new JSONArray();
+			
+					jo.put("subid", ja);
+					jo.put("itemid", ja1);
+					jo.put("itemname", ja2);
+					jo.put("itemprice", ja3);
+					jo.put("measurement", ja4);
+					jo.put("itemcategory", ja5);
+					jo.put("gstcategory", ja6);
+					jo.put("startdate", ja7);
+					jo.put("enddate", ja8);
+					jo.put("count", ja9);
+					jo.put("version", ja10);
+						
+						while(rs.next())
+							{
+				
+								ja.put(rs.getInt(2));
+								ja1.put(rs.getString(3));
+								ja2.put(rs.getString(4));
+								ja3.put(rs.getString(5));
+								ja4.put(rs.getString(6));
+								ja5.put(rs.getString(7));
+								ja6.put(rs.getString(8));
+								ja7.put(rs.getString(9));
+								ja8.put(rs.getString(10));
+								ja9.put(rs.getString(11));
+								ja10.put(rs.getString(12));
+				
+				
+				
+							}
+							
+			
+			}
+			catch(JSONException e)
+			{
+				logger.error("In Item Detail Service: error in JSON object at the time of fetching active item");
+			}
+			catch(SQLException e)
+			{
+				logger.error("In Item Detail Service: error in creating statement or resultset at the time of fetching active item");
+			}
+			catch(Exception e)
+			{
+				
+				logger.error("In Item Detail Service: error at the time of fetching active item");
+			}
+			finally
+			{
+				try
+				{
+					st.close();
+					rs.close();
+					con.close();
+				}
+				catch(Exception e)
+				{
+					logger.error("In Item Detail Service: error in closing statement or resultset or connection at the time of fetching active item");
+				}
+			}
+			
+			return  jo.toString();
+		}
+
+		
+/*13.----------ok--------------Login DETAIL BY USER NAME------------------------------------------------------------------*/		
+
+		public String getLoginDetail(String name)
+		{
+			
+			
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+			
+			String uname="'"+name+"'";
+			
+			JSONObject jo=null;
+			
+			String log="select *from logincontrol where username="+uname;
+			
+			Statement st=null;
+			ResultSet rs=null;					/*fetching detail from login control*/
+			try
+			{
+				
+				 jo=new JSONObject();
+				
+				JSONArray ja=new JSONArray();
+				JSONArray ja1=new JSONArray();
+				JSONArray ja2=new JSONArray();
+				JSONArray ja3=new JSONArray();
+				JSONArray ja4=new JSONArray();
+				JSONArray ja5=new JSONArray();
+				JSONArray ja6=new JSONArray();
+				
+				jo.put("username", ja);
+				jo.put("password", ja1);
+				jo.put("accl", ja2);
+				jo.put("fchg", ja3);
+				jo.put("access", ja4);
+				jo.put("forcelogin", ja5);
+				jo.put("parentid", ja6);
+				
+				
+					
+					
+					 st=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+					 rs=st.executeQuery(log); 
+					
+					if(rs.next()==false)
+					{
+						ja.put("null");
+						ja1.put("null");
+						ja2.put("null");
+						ja3.put("null");
+						ja4.put("null");
+						ja5.put("null");
+						ja6.put("null");
+						
+						return jo.toString();
+						
+					}
+					else
+						{
+							
+							
+							ja.put(rs.getString(1));
+							ja1.put(rs.getString(2));
+							ja2.put(rs.getString(3));
+							ja3.put(rs.getString(4));
+							ja4.put(rs.getString(5));
+							ja5.put(rs.getString(6));
+							ja6.put(rs.getString(7));
+						   
+							
+						
+						}
+				
+				
+			}
+			catch(JSONException e)
+			{
+				logger.error("In Login Detail Service: error in JSON object at the time of fetching detail");
+			}
+			catch(SQLException e)
+			{
+				logger.error("In Login Detail Service: error in create statement or result set at the time of fetching detail");
+			}
+			catch(Exception e)
+			{
+				logger.error("In Login Detail Service: error at the time of fetching detail");
+			}
+			finally
+			{
+				try
+				{
+					st.close();
+					rs.close();
+					con.close();
+				}
+				catch(Exception e)
+				{
+					logger.error("In Login Detail Service: error in closing statement or resultset or connection at the time of fetching detail");
+				}
+			}
+			
+			
+			return jo.toString();
+		}
+		
+		
+/*14.------ok------------------DETAILS OF REPORT by Date-----------------------------------------------------------------*/		
+		public String getReportHDR(String date1,String date2)
+		{
+			
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+			
+			String dat1="'"+date1+"'";
+			String dat2="'"+date2+"'";
+			
+			
+			
+			JSONObject jo=new JSONObject();
+			
+			
+			Statement st=null;
+			ResultSet rs=null;
+				try
+				{
+					JSONArray ja=new JSONArray();
+					JSONArray ja1=new JSONArray();
+					JSONArray ja2=new JSONArray();
+					JSONArray ja3=new JSONArray();
+					JSONArray ja4=new JSONArray();
+					JSONArray ja5=new JSONArray();
+					JSONArray ja6=new JSONArray();
+					JSONArray ja7=new JSONArray();
+					JSONArray ja8=new JSONArray();
+					JSONArray ja9=new JSONArray();
+					JSONArray ja10=new JSONArray();
+					JSONArray ja11=new JSONArray();
+					JSONArray ja12=new JSONArray();
+					JSONArray ja13=new JSONArray();
+					JSONArray ja14=new JSONArray();
+			
+					jo.put("userid", ja);
+					jo.put("invoice_id", ja1);
+					jo.put("invoice_dt", ja2);
+					jo.put("invoice_desc", ja3);
+					jo.put("customer_name", ja4);
+					jo.put("customer_gst", ja5);
+					jo.put("customer_mob", ja6);
+					jo.put("paid_flag", ja7);
+					jo.put("total_disc_amt", ja8);
+					jo.put("paid_via", ja9);
+					jo.put("payment_Ref", ja10);
+					jo.put("total_inv_amt", ja11);
+					jo.put("cgst_amt", ja12);
+					jo.put("sgst_amt", ja13);
+					jo.put("igst_amt" , ja14);
+			
+			
+					/*fetching data from invoice_hdr*/
+					
+					String hdr="select *from invoice_hdr where  invoice_dt between "+dat1+" and "+dat2;
+					st=con.createStatement();
+					rs=st.executeQuery(hdr);
+			
+			
+					while(rs.next())
+					{
+				
+				
+						ja.put(rs.getString(2));
+						ja1.put(rs.getString(3));
+						ja2.put(rs.getString(4));
+						ja3.put(rs.getString(5));
+						ja4.put(rs.getString(6));
+						ja5.put(rs.getString(7));
+						ja6.put(rs.getString(8));
+						ja7.put(rs.getString(9));
+						ja8.put(rs.getString(10));
+						ja9.put(rs.getString(11));
+						ja10.put(rs.getString(12));
+						ja11.put(rs.getString(13));
+						ja12.put(rs.getDouble(14));
+						ja13.put(rs.getDouble(15));
+						ja14.put(rs.getDouble(16));
+					
+					}
+			
+			
+			
+				}
+				catch(JSONException e)
+				{
+					logger.error("In Detail of Report Service by Date: error in Json object ");
+				}
+				catch(SQLException e)
+				{
+					logger.error("In Detail of Report Service by Date: error in creating statement or resultset at the time of fetching detail from invoice_hdr within date");
+				}
+				catch(Exception e)
+				{
+					logger.error("In Detail of Report Service by Date: error at the time of fetching detail from invoice_hdr within date");
+				}
+				finally
+				{
+					try
+					{
+						st.close();
+						rs.close();
+						con.close();
+					}
+					catch(Exception e)
+					{
+						logger.error("In Detail of Report Service by Date: error in closing  statement or resultset or connection at the time of fetching detail from invoice_hdr within date");
+						
+					}
+					
+				}
+		
+			
+				return jo.toString();
+			
+		}
+
+		
+/*15.--------ok------------DETAILS OF REPORT By INVOICE_ID----------------------------------------------------------------*/	
+		
+		public String getInvoiceDetail(String invoiceid)
+		{
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+			
+	         
+			
+			JSONObject jo=new JSONObject();
+			
+			Statement st=null;
+			ResultSet rs=null;
+			
+			try
+			{
+			JSONArray ja=new JSONArray();
+			JSONArray ja1=new JSONArray();
+			JSONArray ja2=new JSONArray();
+			JSONArray ja3=new JSONArray();
+			JSONArray ja4=new JSONArray();
+			JSONArray ja5=new JSONArray();
+			JSONArray ja6=new JSONArray();
+			JSONArray ja7=new JSONArray();
+			JSONArray ja8=new JSONArray();
+			JSONArray ja9=new JSONArray();
+			JSONArray ja10=new JSONArray();
+			JSONArray ja11=new JSONArray();
+			JSONArray ja12=new JSONArray();
+			JSONArray ja13=new JSONArray();
+			JSONArray ja14=new JSONArray();
+			
+			jo.put("userid", ja);
+			jo.put("invoice_id", ja1);
+			jo.put("invoice_dt", ja2);
+			jo.put("invoice_desc", ja3);
+			jo.put("customer_name", ja4);
+			jo.put("customer_gst", ja5);
+			jo.put("customer_mob", ja6);
+			jo.put("paid_flag", ja7);
+			jo.put("total_disc_amt", ja8);
+			jo.put("paid_via", ja9);
+			jo.put("payment_Ref", ja10);
+			jo.put("total_inv_amt", ja11);
+			jo.put("cgst_amt", ja12);
+			jo.put("sgst_amt", ja13);
+			jo.put("igst_amt" , ja14);
+			
+					/*fetching invoice_hdr detail by invoice id*/
+			
+			String hdr="select *from invoice_hdr where  invoice_id="+invoiceid;
+			 st=con.createStatement();
+			 rs=st.executeQuery(hdr);
+			
+			
+			 while(rs.next())
+			 	{
+				 	ja.put(rs.getString(2));
+				 	ja1.put(rs.getInt(3));
+				 	ja2.put(rs.getString(4));
+				 	ja3.put(rs.getString(5));
+				 	ja4.put(rs.getString(6));
+				 	ja5.put(rs.getString(7));
+				 	ja6.put(rs.getString(8));
+				 	ja7.put(rs.getString(9));
+				 	ja8.put(rs.getDouble(10));
+				 	ja9.put(rs.getString(11));
+				 	ja10.put(rs.getString(12));
+				 	ja11.put(rs.getDouble(13));
+					ja12.put(rs.getDouble(14));
+					ja13.put(rs.getDouble(15));
+					ja14.put(rs.getDouble(16));
+				
+			 	}
+			 
+			}
+			catch(JSONException e)
+			{
+				logger.error("In Detail of Invoice id Service by Invoice id: error in json object");
+			}
+			catch(SQLException e)
+			{
+				logger.error("In Detail of Invoice id Service by Invoice id: error in creating statement or resultset at the time of fetching invoice_hdr detail by invoice id");
+			}
+			catch(Exception e)
+			{
+				logger.error("In Detail of Invoice id Service by Invoice id: error at the time of fetching invoice_hdr detail by invoice id");
+			}
+			finally
+			{
+				try
+				{
+				st.close();
+				rs.close();
+				con.close();
+				}
+				catch(Exception e)
+				{
+					logger.error("In Detail of Invoice id Service by Invoice id: error in closing statement or resultset or connection at the time of fetching invoice_hdr detail by invoice id");
+				}
+			}
+			
+			return jo.toString();
+			
+		}
+		
+/*16.--------ok-----------------GETING CUSTOMER DETAIL from Invoice_hdr BY MOBILE NUMBER------------------------------*/
+		
+		
+		
+		public String getCustomerDetails(String mobile)
+		{
+
+			DatabaseConnection db=new DatabaseConnection();
+			Connection con=db.getConnection();
+			
+			
+			
+			JSONObject jo=new JSONObject();
+			
+			Statement st=null;
+			ResultSet rs=null;
+			try
+			{
+			
+				JSONArray ja1=new JSONArray();
+				JSONArray ja2=new JSONArray();
+				JSONArray ja3=new JSONArray();
+				
+				jo.put("customermobile", ja1);
+				jo.put("name", ja2);
+				jo.put("gst", ja3);
+				
+					/* Fetching invoice_hdr detail by mobile number*/
+				
+				String invoicehdr="select  customer_name,customer_mob,  customer_gst from invoice_hdr where  customer_mob="+mobile;	
+				 st=con.createStatement();
+				 rs=st.executeQuery(invoicehdr);
+				if(rs.next()==false)
+				{
+					ja1.put("notexist");
+					ja2.put("null");
+					ja3.put("null");
+					
+					return jo.toString();
+					
+				}
+					rs.previous();
+				while(rs.next())
+				{
+				
+					ja1.put(rs.getString(2));
+					ja2.put(rs.getString(1));
+					ja3.put(rs.getString(3));
+				}
+				
+				
+			}
+			catch(JSONException e)
+			{
+				logger.error("In Geting customer invoice_hdr detail service by mobile: error in json object at the time of fetching invoice_hdr detail by mobile number");
+			}
+			catch(SQLException e)
+			{
+				logger.error("In Geting customer invoice_hdr detail service by mobile: error in creating statement or resultset at the time of fetching invoice_hdr detail by mobile number");
+			}
+			catch(Exception e)
+			{
+				logger.error("In Geting customer invoice_hdr detail service by mobile: error at the time of fetching invoice_hdr detail by mobile number");
+			}
+			finally
+			{
+				try
+				{
+				st.close();
+				rs.close();
+				con.close();
+				}
+				catch(Exception e)
+				{
+					logger.error("In Geting customer invoice_hdr service by mobile: error in closing statement or resultset or connection at the time of fetching invoice_hdr detail by mobile number");
+				}
+			}
+			
+			return jo.toString();
+		}
+		
+
+
+		
+/*17.-------------------------SYNCH INVOICE-----------------------------------------------------------------------------*/	
+			
+			
+		public String setInvoice_hdr_Line(String item)
+			{
+				
+				DatabaseConnection db=new DatabaseConnection();
+				Connection con=db.getConnection();
+				
+				int flag=0, inserthdr=0, insertline=0;
+				
+				
+				
+				String maxidhdr="select max(id) from invoice_hdr";    /*selecting max id from both table*/
+				String maxidline="select max(id) from invoice_line";
+				
+				Statement st=null;
+				Statement st1=null;
+				ResultSet rs=null;
+				ResultSet rs1=null;
+				
+				int hdrid=0;
+				int lineid=0;
+				
+				
+				try
+				{
+						st=con.createStatement();
+						rs=st.executeQuery(maxidhdr);
+						
+						
+						
+						if(rs.next()==false)
+						{
+							inserthdr=1;
+							
+						}
+						else
+						{
+							
+							hdrid=rs.getInt(1);
+							
+						}
+						
+						
+						st1=con.createStatement();
+						rs1=st1.executeQuery(maxidline);
+						
+						if(rs1.next()==false)
+						{
+							insertline=1;
+							
+						}
+						else
+						{
+							lineid=rs1.getInt(1);
+							
+						}
+						
+				}
+				catch(SQLException e)
+				{
+					
+				}
+				
+				
+				//System.out.println(hdrid);
+				//System.out.println(lineid);
+				
+				
+				
+				 
+				// System.out.println(item);
+				 
+				 try
+				 {
+					 JSONObject obj=new JSONObject(item);
+					
+					 JSONArray arr = obj.getJSONArray("userid");
+					 JSONArray arr1 = obj.getJSONArray("invoice_id");
+					 JSONArray arr2 = obj.getJSONArray("invoice_dt");
+					 JSONArray arr3 = obj.getJSONArray("invoice_desc");
+					 JSONArray arr4 = obj.getJSONArray("customer_name");
+					 JSONArray arr5 = obj.getJSONArray("customer_gst");
+					 JSONArray arr6 = obj.getJSONArray("customer_mob");
+					 JSONArray arr7 = obj.getJSONArray("paid_flag");
+					 JSONArray arr8 = obj.getJSONArray("total_disc_amt");
+					 JSONArray arr9 = obj.getJSONArray("paid_via");
+					 JSONArray arr10 = obj.getJSONArray("payment_Ref");
+					 JSONArray arr11 = obj.getJSONArray("total_inv_amt");
+					 JSONArray arr12 = obj.getJSONArray("cgst_amt");
+					 JSONArray arr13 = obj.getJSONArray("sgst_amt");
+					 JSONArray arr14 = obj.getJSONArray("igst_amt");
+					 JSONArray arr15 = obj.getJSONArray("invoice_item_seq");
+					 JSONArray arr16 = obj.getJSONArray("item_id");
+					 JSONArray arr17 = obj.getJSONArray("item_uom");
+					 JSONArray arr18 = obj.getJSONArray("item_qty");
+					 JSONArray arr19 = obj.getJSONArray("item_rate");
+					 JSONArray arr20 = obj.getJSONArray("item_dis_rt");
+					 JSONArray arr21 = obj.getJSONArray("total_dis_on_item");
+					 
+					 
+					
+				
+					 
+					 String hdr="insert into invoice_hdr(userid,invoice_id, invoice_dt, invoice_desc, customer_name,"
+					 		+ "customer_gst, customer_mob,paid_flag,total_disc_amt, paid_via, payment_Ref, "
+					 		+ "total_inv_amt, cgst_amt,sgst_amt,igst_amt ) "
+					 		+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					 
+					 for(int i=0; i<arr.length() && i<arr2.length() && i<arr3.length() && i<arr4.length() && i<arr5.length() && i<arr6.length() && i<arr7.length() && i<arr8.length() && i<arr9.length() && i<arr10.length() && i<arr11.length() && i<arr12.length() && i<arr13.length() && i<arr14.length(); i++)
+					 {
+						
+						 //System.out.print(arr.getInt(i));
+						 
+						 PreparedStatement ps = con.prepareStatement(hdr);
+							
+						 ps.setInt(1, arr.getInt(i));
+						 ps.setString(2,arr1.getString(i));
+						 ps.setString(3, arr2.getString(i));
+						 ps.setString(4, arr3.getString(i));
+						 ps.setString(5, arr4.getString(i));
+						 ps.setString(6, arr5.getString(i));
+						 ps.setString(7, arr6.getString(i));
+						 ps.setString(8, arr7.getString(i));
+						 ps.setString(9, arr8.getString(i));
+						 ps.setString(10, arr9.getString(i));
+						 ps.setString(11, arr10.getString(i));
+						 ps.setString(12, arr11.getString(i));
+						 ps.setDouble(13, arr12.getDouble(i));
+						 ps.setDouble(14, arr13.getDouble(i));
+						 ps.setDouble(15, arr14.getDouble(i));
+						 
+						 ps.executeUpdate();
+						 
+					 }
+					 
+					 
+					 
+					
+					 
+					 String line="insert into invoice_line(userid,invoice_id, invoice_dt, invoice_item_seq,"
+					 		+ " item_id,invoice_desc, item_uom, item_qty,item_rate, item_dis_rt,total_dis_on_item,"
+					 		+ " total_dis_amt,cgst_amt, sgst_amt, igst_amt) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					 
+					 
+					 for(int i=0; i<arr.length() && i<arr1.length() && i<arr2.length() && i<arr15.length() && i<arr16.length() && i<arr3.length() && i<arr17.length() && i<arr18.length() && i<arr19.length() && i<arr20.length() && i<arr21.length() && i<arr8.length() && i<arr12.length() && i<arr13.length() && i<arr14.length(); i++)
+					 {
+						 
+						 
+						 PreparedStatement ps1 = con.prepareStatement(line);
+						 
+						 ps1.setString(1, arr.getString(i));
+						 ps1.setString(2, arr1.getString(i));
+						 ps1.setString(3, arr2.getString(i));
+						 ps1.setString(4, arr15.getString(i));
+						 ps1.setString(5, arr16.getString(i));
+						 ps1.setString(6, arr3.getString(i));
+						 ps1.setString(7, arr17.getString(i));
+						 ps1.setString(8, arr18.getString(i));
+						 ps1.setString(9, arr19.getString(i));
+						 ps1.setString(10, arr20.getString(i));
+						 ps1.setString(11, arr21.getString(i));
+						 ps1.setString(12, arr8.getString(i));
+						 ps1.setString(13, arr12.getString(i));
+						 ps1.setString(14, arr13.getString(i));
+						 ps1.setString(15, arr14.getString(i));
+						 
+						 
+						 ps1.executeUpdate();
+						 
+					 }
+					 
+					 
+					 
+					 
+				 }
+				 catch(Exception e)
+				 {
+					 flag=1;
+					 System.out.println(e);
+				 }
+				 
+				 
+				
+				 
+				 if(flag==1)
+				 {
+					 
+					 String delhdr="delete from invoice_hdr where id>"+hdrid;
+					 
+					try
+					{
+						PreparedStatement ps2 = con.prepareStatement(delhdr);
+						
+						ps2.executeUpdate();
+					}
+					catch(SQLException e)
+					{
+						
+					}
+					 
+					 
+					 
+					 
+					 
+					 String delline="delete from invoice_line where id>"+lineid;
+					 
+					 try
+					 {
+					    PreparedStatement ps3 = con.prepareStatement(delline);
+						
+						ps3.executeUpdate();
+					 }
+					 catch(SQLException e)
+					 {
+						 
+					 }
+					 
+					 
+				 }
+				
+				
+				return item;
+			}
+			
+
+
+
+
 }
+
 
 
 

@@ -153,7 +153,7 @@ public class ResourceServices {
 		   return bl.editSubUserAccess(editsubuser);
 	   }	   
   
-/*11.----------------------------Shrink Item--------------------------------*/ 
+/*11.------------ok-------------------Synch Item----------------------------------------------------------------*/ 
 	   
 	   @POST
 	   @Path("additem")
@@ -161,11 +161,87 @@ public class ResourceServices {
 	   @Produces(MediaType.APPLICATION_JSON)
 	   public String  addItem(String item)
 	   {
-		   //System.out.println(item);
+		  
 		   BusinessLogic bl=new BusinessLogic();
-		   return bl.getAddItem(item);
+		   return bl.addItem(item);
 		   
 	   }	   
 	   
 	   
+/*12.----------ok----------------GET ITEM DETAIL BY SUB ID WHICH ITEM IS ACTIVE------------------------------------------*/
+		   
+		  @GET
+		  @Path("getitem")
+		  @Produces(MediaType.APPLICATION_JSON)
+		  public String getAllItem(@QueryParam("subid") String id)
+		  {
+			  BusinessLogic bl=new BusinessLogic();
+			  return bl.getAllItem(id);
+		  }	
+	
+		   
+/*13.----------ok--------------Login DETAIL BY USER NAME------------------------------------------------------------------*/
+			  
+			  @GET
+			  @Path("logindetail")
+			 // @Consumes(MediaType.APPLICATION_JSON)
+			  @Produces(MediaType.APPLICATION_JSON)
+			  public String loginDetails(@QueryParam("username") String username)
+			  {
+				  BusinessLogic bl=new BusinessLogic();
+				  return bl.getLoginDetail(username);
+			  }		  
+			 
+			  
+/*14.------ok------------------DETAILS OF REPORT by Date-------------------------------------------------------------------*/
+			  
+			  @GET
+			  @Path("reportdetail")
+			  @Consumes(MediaType.APPLICATION_JSON)
+			  @Produces(MediaType.APPLICATION_JSON)
+			  public String reportHDR(@QueryParam("date1") String date1,@QueryParam("date2") String date2)
+			  {
+				  BusinessLogic bl=new BusinessLogic();
+				  return bl.getReportHDR(date1,date2);
+			  }
+
+/*15.------ok--------------DETAILS OF REPORT By INVOICE_ID----------------------------------------------------------------*/
+			 
+			  @GET
+			  @Path("reportinvoice")
+			  @Consumes(MediaType.APPLICATION_JSON)
+			  @Produces(MediaType.APPLICATION_JSON)
+			  public String reportInvoice(@QueryParam("invoiceid") String invoiceid)
+			  {
+				  BusinessLogic bl=new BusinessLogic();
+				  return bl.getInvoiceDetail(invoiceid);
+			  }
+			 	
+ /*16.--------ok-----------------GETING CUSTOMER DETAIL from Invoice_hdr BY MOBILE NUMBER--------------------------------*/
+			  
+			  @GET
+			  @Path("cusdetail")
+			  @Consumes(MediaType.APPLICATION_JSON)
+			  @Produces(MediaType.APPLICATION_JSON)
+			  public String customerDetails(@QueryParam("mobile") String mobile)
+			  {
+				  BusinessLogic bl=new BusinessLogic();
+				  return bl.getCustomerDetails(mobile);
+			  }			  
+			  
+
+/*17.----------ok---------------SYNCH INVOICE----------------------------------------------------------------------------*/
+			  
+			  
+			  
+			  @POST
+			  @Path("invoice")
+			  @Consumes(MediaType.APPLICATION_JSON)
+			  @Produces(MediaType.APPLICATION_JSON)
+			  public String invoiceHDR_Line(String item)
+			  {
+				  BusinessLogic bl=new BusinessLogic();
+				  return bl.setInvoice_hdr_Line(item);
+			  }			  
+		 
 }   
