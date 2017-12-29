@@ -90,16 +90,16 @@ public class Implementation{
 			}
 			catch(SQLException e)
 			{
-				logger.error("error in create statement");
+				logger.error("In register service: error : "+e+ ",  in create statement");
 			}
 			catch(JSONException e)
 			{
-				logger.error("error in JSON object");
+				logger.error("In register service:  error  : "+e+ ", in JSON object");
 				
 			}
 			catch(Exception e)
 			{
-				logger.error("error in register user for checking mobile end gst existing status");
+				logger.error("In register service:  error  : "+e+ ",  in register user for checking mobile end gst existing status");
 			}
 			finally
 			{
@@ -110,7 +110,7 @@ public class Implementation{
 				}
 				catch(SQLException e)
 				{
-					logger.error("error at the time of closing resultset and statement in register user for checking mobile end gst existing status");
+					logger.error("In register service: error : "+e+ " at the time of closing resultset and statement in register user for checking mobile end gst existing status");
 				}
 			}
 			
@@ -149,11 +149,11 @@ public class Implementation{
 		    }
 		    catch(SQLException e)
 		    {
-		    	logger.error("error in PreparedStatement at the time of inserting user details in registration table");
+		    	logger.error("In register service: error  : "+e+ ",  at the time of inserting user details in registration table");
 		    }
 		    catch(Exception e)
 		    {
-		    	logger.error("error at the time of inserting user details in registration table");
+		    	logger.error("In register Service :error : "+e+ ",  at the time of inserting user details in registration table");
 		    }
 		    finally
 		    {
@@ -163,7 +163,7 @@ public class Implementation{
 		    	}
 		    	catch(SQLException e)
 		    	{
-		    		logger.error("error in closing PreparedStatement at the time of inserting user details in registration table");
+		    		logger.error("In register Service: error  : "+e+ ",  at the time of inserting user details in registration table");
 		    	}
 		    }
 			    
@@ -198,16 +198,16 @@ public class Implementation{
 		    		    
 		    		    	}catch(SQLException e)
 		    		    	{
-		    		    		logger.error("error in resultset at the time of getting sub id from registration table as username");
+		    		    		logger.error("In register Service: error  : "+e+ ",  at the time of getting sub id from registration table as username");
 		    		    		
 		    		    	}
 		    		    	catch(JSONException e)
 		    		    	{
-		    		    		logger.error("error in json object at the time of getting sub id from registration table");
+		    		    		logger.error("In register service: error  : "+e+ ",  at the time of getting sub id from registration table");
 		    		    	}
 		    		    	catch(Exception e)
 		    		    	{
-		    		    		logger.error("error in Getting Subid from registration as username");
+		    		    		logger.error("In register service error  : "+e);
 		    		    	}
 		    		    	finally
 		    		    	{
@@ -217,7 +217,7 @@ public class Implementation{
 		    		    		}
 		    		    		catch(SQLException e)
 		    		    		{
-		    		    			logger.error("error in closing resultset at the time of getting sub id from registration table");
+		    		    			logger.error("In register service: error  : "+e+ ",  at the time of getting sub id from registration table");
 		    		    		}
 		    		    	}
 		    		    	
@@ -247,11 +247,11 @@ public class Implementation{
 		    			   }
 		    			   catch(SQLException e)
 		    			   {
-		    				   logger.error("error in prepareStatement at the time of inserting data in logincontrol table");
+		    				   logger.error("In register service: error : "+e+ ",  at the time of inserting data in logincontrol table");
 		    			   }
 		    			   catch(Exception e)
 		    			   {
-		    				   logger.error("error at the time of inserting data in logincontrol table");
+		    				   logger.error("In register service :error  : "+e+ ", at the time of inserting data in logincontrol table");
 		    			   }
 		    			   finally
 		    			   {
@@ -262,7 +262,7 @@ public class Implementation{
 		    				   }
 		    				   catch(SQLException e)
 		    				   {
-		    					   logger.error("error in closing prepareStatement at the time of inserting data in logincontrol table");
+		    					   logger.error("In register service: error:  : "+e+ ",  at the time of inserting data in logincontrol table");
 		    				   }
 		    			   }
 		    	
@@ -284,7 +284,7 @@ public class Implementation{
 		    	}
 		    	catch(Exception e)
 		    	{
-		    		logger.error("In register service : some error occured");
+		    		logger.error("In register service :  error  : "+e);
 		    	}
 		    	finally
 		    	{   try
@@ -293,7 +293,7 @@ public class Implementation{
 		    		}
 		    		catch(Exception e)
 		    		{
-		    			logger.error("In register service: error at the time of clossing connection");
+		    			logger.error("In register service: error : "+e+ ",  at the time of clossing connection");
 		    		}
 		    	}
 		    	return jo1.toString(); 
@@ -341,11 +341,11 @@ public class Implementation{
 					}
 					catch(SQLException e)
 					{
-						logger.error("In Login Service: error in creating statement or resultset at the time of checking user exist in logincontrol or not");
+						logger.error("In Login Service: error  : "+e+ ",  at the time of checking user exist in logincontrol or not");
 					}
 					catch(Exception e)
 					{
-						logger.error("In login service: error at the time of checking user exist in logincontrol or not");
+						logger.error("In login service: error  : "+e+ ", at the time of checking user exist in logincontrol or not");
 					}
 					finally
 					{
@@ -354,7 +354,7 @@ public class Implementation{
 						rs1.close();
 						}catch(Exception e)
 						{
-							logger.error("In login service: error in closing resultset at the time of checking user exist in logincontrol or not");
+							logger.error("In login service: error  : "+e+ ", at the time of checking user exist in logincontrol or not");
 						}
 					}
 				
@@ -419,12 +419,12 @@ public class Implementation{
 						catch(SQLException e)
 							{
 								flag=3;
-								logger.error("In Login service: error in result set at the time of checking after user is exist");
+								logger.error("In Login service: error  : "+e+ ",  at the time of checking after user is exist");
 							}
 	 
 							catch(Exception e)
 							{
-								logger.error("In Login service: error at the time of checking after user is exist");
+								logger.error("In Login service: error  : "+e+ ", at the time of checking after user is exist");
 								
 							}
 						finally
@@ -435,7 +435,7 @@ public class Implementation{
 							}
 							catch(Exception e)
 							{
-								logger.error("In login service: error in closing resultset at the time of checking after user is exist");
+								logger.error("In login service: error  : "+e+ ",  at the time of checking after user is exist");
 							}
 						}
 					}
@@ -463,11 +463,11 @@ public class Implementation{
 					}
 					catch(SQLException e)
 					{
-						logger.error("In login service: error in resultset at the time selecting sub user name");
+						logger.error("In login service: error  : "+e+ ",  at the time selecting sub user name");
 					}
 					catch(Exception e)
 					{
-						logger.error("In login service: error at the time selecting sub user name");
+						logger.error("In login service: error  : "+e+ ", at the time selecting sub user name");
 					}
 					finally
 					{
@@ -477,7 +477,7 @@ public class Implementation{
 						}
 						catch(Exception e)
 						{
-							logger.error("In login service: error in closing resultset at the time of selecting sub user name");
+							logger.error("In login service: error  : "+e+ ",  at the time of selecting sub user name");
 						}
 					}
 					
@@ -539,11 +539,11 @@ public class Implementation{
 					}
 					catch(SQLException e)
 					{
-						logger.error("In login service: error in resultset at the time of checking sub user name and password in logincontrol");
+						logger.error("In login service: error  : "+e+ ",  at the time of checking sub user name and password in logincontrol");
 					}
 					catch(Exception e)
 					{
-						logger.error("In login service: error at the time of checking sub user name and password in logincontrol");
+						logger.error("In login service: error : "+e+ ", at the time of checking sub user name and password in logincontrol");
 					}
 					finally
 					{
@@ -554,7 +554,7 @@ public class Implementation{
 						}
 						catch(Exception e)
 						{
-							logger.error("In login service:error in closing resultset and connection at the time of checking sub user name and password in logincontrol");
+							logger.error("In login service:error : "+e+ ",  at the time of checking sub user name and password in logincontrol");
 						}
 					}
 				}
@@ -614,12 +614,12 @@ public class Implementation{
 						}
 						catch(SQLException e)
 						{
-							logger.error("In forget user service: error in creating connection or resultset at the time of checking mobile number and account lock existance");
+							logger.error("In forget user service: error  : "+e+ ",  at the time of checking mobile number and account lock existance");
 							
 						}
 						catch (Exception e) 
 							{
-								logger.error("In forget user service: error  at the time of checking mobile number and account lock existance");
+								logger.error("In forget user service: error  : "+e+ ",  at the time of checking mobile number and account lock existance");
 							
 							}
 						finally
@@ -631,7 +631,7 @@ public class Implementation{
 								
 							}catch(Exception e)
 							{
-								logger.error("In forget service: error at the time of colsing resultset or connection");
+								logger.error("In forget service: error  : "+e+ ", at the time of colsing resultset or connection");
 							}
 						}
 		
@@ -647,7 +647,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 						{
-							logger.error("In forget user service: error when mobile number not exist");
+							logger.error("In forget user service: error : "+e+ ",  when mobile number not exist");
 						}
 	
 						
@@ -707,13 +707,13 @@ public class Implementation{
 						}
 						catch(SQLException e)
 						{
-							logger.error("In forget password service: error in database connection or in resultset at the time of checking user and account existance");
+							logger.error("In forget password service: error  : "+e+ ",  at the time of checking user and account existance");
 							
 						}
 						catch(Exception e)
 							{
 								
-							logger.error("In forget password service: error at the time of checking user and account existance");
+							logger.error("In forget password service: error  : "+e+ ", at the time of checking user and account existance");
 							}
 						finally
 						{
@@ -725,7 +725,7 @@ public class Implementation{
 							}
 							catch(Exception e)
 							{
-								logger.error("In forget password service: error at the time of closing resultset and connection");
+								logger.error("In forget password service: error  : "+e+ ", at the time of closing resultset and connection");
 							}
 							
 						}
@@ -741,7 +741,7 @@ public class Implementation{
 				
 			catch(Exception e)
 						{
-							logger.error("In forget password service: error when user name not exist");
+							logger.error("In forget password service: error  : "+e+ ", when user name not exist");
 						}
 				return jo.toString();
 	 
@@ -788,11 +788,11 @@ public class Implementation{
 					}
 				catch(SQLException e)
 				{
-					logger.error("In temp password service: error in creating statement or resultset at the time of checking user exist in register table or not");
+					logger.error("In temp password service: error  : "+e+ "  at the time of checking user exist in register table or not");
 				}
 				catch(Exception e)
 				{
-					logger.error("In temp password service: error at the time of checking user exist in register table or not");
+					logger.error("In temp password service: error  : "+e+ " at the time of checking user exist in register table or not");
 				}
 				finally
 				{
@@ -803,7 +803,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 					{
-						logger.error("In temp password service: error in clossing statement and resultset at the time checking user exist in register table or not");
+						logger.error("In temp password service: error  : "+e+ "  at the time checking user exist in register table or not");
 					}
 				}
 				
@@ -833,11 +833,11 @@ public class Implementation{
 					}
 					catch(SQLException e)
 					{
-						logger.error("In temp Password service: error in prepare statement at the time of set user name and password in registration and logincontrol table");
+						logger.error("In temp Password service: error  : "+e+ "  at the time of set user name and password in registration and logincontrol table");
 					}
 					catch(Exception e)
 					{
-						logger.error("In temp Password service: error at the time of set user name and password in registration and logincontrol table");
+						logger.error("In temp Password service: error  : "+e+ " at the time of set user name and password in registration and logincontrol table");
 					}
 				    finally
 				    {
@@ -849,7 +849,7 @@ public class Implementation{
 				    	}
 				    	catch(Exception e)
 				    	{
-				    		logger.error("In temp password service: error in closing preparestatement and connection at the time of set user name and passwors");
+				    		logger.error("In temp password service: error  : "+e+ "  at the time of set user name and passwors");
 				    	}
 				    }
 			
@@ -909,11 +909,11 @@ public class Implementation{
 											}
 										catch(SQLException e)
 										{
-											logger.error("In reset password service: error in prepare statement at the time of checking user exist in register table");
+											logger.error("In reset password service: error  : "+e+ "  at the time of checking user exist in register table");
 										}
 										catch(Exception e)
 											{
-												logger.error("In reset password service: error  at the time of checking user exist in register table");
+												logger.error("In reset password service: error  : "+e+ "  at the time of checking user exist in register table");
 												
 											}
 										finally
@@ -934,11 +934,11 @@ public class Implementation{
 			    	/*--------Main Exception-------*/
 				catch(SQLException e)
 				{
-					logger.error("In reset password service: error in create statement or result set");
+					logger.error("In reset password service: error  : "+e+ " in create statement or result set");
 				}
 				catch(Exception e)
 						{ 
-							logger.error("In reset password service: error");
+							logger.error("In reset password service: error : "+e  );
 						}
 				finally
 				{
@@ -950,7 +950,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 					{
-						logger.error("In reset password service: error at the time of closing statement or resultset or connection");
+						logger.error("In reset password service: error  : "+e+ " at the time of closing statement or resultset or connection");
 					}
 				}
 						return "reset";
@@ -990,11 +990,11 @@ public class Implementation{
 			}
 			catch(SQLException e)
 			{
-				logger.error("In sub user register service :error in creating statement and resultset at the time of checking parent user existance");
+				logger.error("In sub user register service :error  : "+e+ "  at the time of checking parent user existance");
 			}
 			catch(Exception e)
 			{
-				logger.error("In sub user register service :error at the time of checking parent user existance");
+				logger.error("In sub user register service :error  : "+e+ " at the time of checking parent user existance");
 			}
 			finally 
 			{
@@ -1005,7 +1005,7 @@ public class Implementation{
 				}
 				catch(Exception e)
 				{
-					logger.error("In sub user register service :error in closing statement and resultset at the time of checking parent user existance");
+					logger.error("In sub user register service :error  : "+e+ "  at the time of checking parent user existance");
 				}
 				
 			}
@@ -1026,11 +1026,11 @@ public class Implementation{
 					catch(SQLException e)
 					{
 					
-						logger.error("In sub user Register service :error in create statement or resultset at the time of checking sub user existance");
+						logger.error("In sub user Register service :error  : "+e+ "  at the time of checking sub user existance");
 					}
 					catch(Exception e)
 					{   
-						logger.error("In sub user Register service :error at the time of checking sub user existance");
+						logger.error("In sub user Register service :error  : "+e+ " at the time of checking sub user existance");
 					}
 					finally
 					{
@@ -1042,7 +1042,7 @@ public class Implementation{
 						catch(Exception e)
 						{
 							
-							logger.error("In sub user register service :error in closing statement and resultset at the time of checking sub user existance");
+							logger.error("In sub user register service :error  : "+e+ "  at the time of checking sub user existance");
 						}
 					}
 
@@ -1083,10 +1083,10 @@ public class Implementation{
 					}
 					catch(SQLException e)
 					{
-						logger.error("In sub user register service :error in preparestatement at the time of inserting details in sub user and logincontrol table");
+						logger.error("In sub user register service :error  : "+e+ "  at the time of inserting details in sub user and logincontrol table");
 					}
 					catch(Exception e)
-					{   logger.error("In sub user register service :error at the time of inserting details in sub user and logincontrol talbe");
+					{   logger.error("In sub user register service :error : "+e+ "  at the time of inserting details in sub user and logincontrol talbe");
 					}
 					finally
 					{
@@ -1098,7 +1098,7 @@ public class Implementation{
 						}
 						catch(Exception e)
 						{
-							logger.error("In sub user register service :error in closing preparestatment and connection after sub user registration");
+							logger.error("In sub user register service :error : "+e+ " after sub user registration");
 						}
 					}
 				
@@ -1122,9 +1122,9 @@ public class Implementation{
 				try {
 					jo.put("subusername", ja);
 					}
-				catch (JSONException e1) 
+				catch (JSONException e) 
 				{
-					logger.error("In all sub user services: error in JSON object");
+					logger.error("In all sub user services: error : " +e+  "  in JSON object");
 				}
 		
 		
@@ -1144,11 +1144,11 @@ public class Implementation{
 					}
 				catch(SQLException e)
 				{
-					logger.error("In all sub user name service: error in create statement or result at the time of checking parent user exist or not");
+					logger.error("In all sub user name service: error  : "+e+ "  at the time of checking parent user exist or not");
 				}
 				catch(Exception e)
 					{
-					logger.error("In all sub user name service: error at the time of checking parent user exist or not");
+					logger.error("In all sub user name service: error  : "+e+ " at the time of checking parent user exist or not");
 						
 					}
 				finally
@@ -1160,7 +1160,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 					{
-						logger.error("In all sub user name service: error in closing result set or create statement at the time of checking parent user exist or not");
+						logger.error("In all sub user name service: error  : "+e+ "  at the time of checking parent user exist or not");
 					}
 				}
 		
@@ -1205,12 +1205,12 @@ public class Implementation{
 					}
 				catch(SQLException e)
 				{
-					logger.error("In all sub user services: error in create statement or result set at the time of fetching all sub user");
+					logger.error("In all sub user services: error  : "+e+ "  at the time of fetching all sub user");
 				}
 				catch(Exception e)
 					{
 						
-					logger.error("In all sub user services: error at the time of fetching all sub user");
+					logger.error("In all sub user services: error at  : "+e+ " the time of fetching all sub user");
 						
 					}
 				finally
@@ -1223,7 +1223,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 					{
-						logger.error("In all sub user services: error in closing resultset or statement or connection at the time of fetching all sub user");
+						logger.error("In all sub user services: error  : "+e+ "  at the time of fetching all sub user");
 					}
 				}
 				
@@ -1303,11 +1303,11 @@ public class Implementation{
 					}
 				catch(SQLException e)
 				{
-					logger.error("In get sub user access service: error in create statement or resultset at the time checking of sub user detail");
+					logger.error("In get sub user access service: error  : "+e+ "  at the time checking of sub user detail");
 				}
 				catch(Exception e)
 				{   
-					logger.error("In get sub user access service: error at the time checking of sub user detail");
+					logger.error("In get sub user access service: error  : "+e+ " at the time checking of sub user detail");
 				}
 				finally
 				{
@@ -1322,7 +1322,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 					{
-						logger.error("In get sub user access service: error in closing  statement or resultset or connection at the time checking of sub user detail");
+						logger.error("In get sub user access service: error  : "+e+ "  at the time checking of sub user detail");
 					}
 				}
 		 
@@ -1340,7 +1340,7 @@ public class Implementation{
 						}
 						catch(Exception e)
 						{
-							logger.error("In get sub user access service: error in JSON object when sub user exist but accl lock");		
+							logger.error("In get sub user access service: error  : "+e+ " in JSON object when sub user exist but accl lock");		
 						}
 					}	
 				
@@ -1380,11 +1380,11 @@ public class Implementation{
 					}
 					catch(SQLException e)
 					{
-						logger.error("In edit sub user access service: error in create statement or result set at the time of checking sub user existance");
+						logger.error("In edit sub user access service: error  : "+e+ "  at the time of checking sub user existance");
 					}
 					catch(Exception e)
 					{
-						logger.error("In edit sub user access service: error at the time of checking sub user existance");
+						logger.error("In edit sub user access service: error  : "+e+ " at the time of checking sub user existance");
 					
 					}
 					finally
@@ -1396,7 +1396,7 @@ public class Implementation{
 						}
 						catch(Exception e)
 						{
-							logger.error("In edit sub user access service: error at the time of closing create statement or result set");
+							logger.error("In edit sub user access service: error  : "+e+ " at the time of closing create statement or result set");
 						}
 						
 					}
@@ -1426,11 +1426,11 @@ public class Implementation{
 				}
 				catch(SQLException e)
 				{
-					logger.error("In edit sub user access service: error in prepare statement at the time of edit sub user access");
+					logger.error("In edit sub user access service: error  : "+e+ "  at the time of edit sub user access");
 				}
 				catch(Exception e)
 				{
-					logger.error("In edit sub user access service: error at the time of edit sub user access");
+					logger.error("In edit sub user access service: error : "+e+ "  at the time of edit sub user access");
 				}
 				finally
 				{
@@ -1443,7 +1443,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 					{
-						logger.error("In edit sub user access service: error at the time of closing preparestatement or connection");
+						logger.error("In edit sub user access service: error : "+e+ "  at the time of closing preparestatement or connection");
 					}
 					
 				}
@@ -1490,11 +1490,11 @@ public class Implementation{
 				}
 				catch(SQLException e)
 				{
-					logger.error("In Synch item service :error in creating statement or resultset at the time of selecting last item in item table");
+					logger.error("In Synch item service :error  : "+e+ "  at the time of selecting last item in item table");
 				}
 				catch(Exception e)
 				{
-					logger.error("In Synch item service :error at the time of selecting last item in item table");
+					logger.error("In Synch item service :error  : "+e+ " at the time of selecting last item in item table");
 				}
 				finally
 				{
@@ -1505,7 +1505,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 					{
-						logger.error("In Synch item service :error in closing statement or resultset at the time of selecting last item in item table");
+						logger.error("In Synch item service :error  : "+e+ "  at the time of selecting last item in item table");
 						
 					}
 				}
@@ -1634,17 +1634,17 @@ public class Implementation{
 			catch(JSONException e)
 			{
 				System.out.println(e);
-				logger.error("In Synch item service :error in JSON object at the time parsing data in item table");
+				logger.error("In Synch item service :error  : "+e+ "  at the time parsing data in item table");
 			}
 			catch(SQLException e)
 			{
 				System.out.println(e);
-				logger.error("In Synch item service :error in creating statement or resultset or preparestatment at the time of inserting data");
+				logger.error("In Synch item service :error  : "+e+ "  at the time of inserting data");
 			}
 			catch(Exception e)
 			{
 				System.out.println(e);
-				logger.error("In Synch item service :error  at the time of inserting data in item table");
+				logger.error("In Synch item service :error  : "+e+ "  at the time of inserting data in item table");
 				flag=1;	
 				
 			}
@@ -1668,11 +1668,11 @@ public class Implementation{
 				}
 				catch(SQLException e)
 				{
-					logger.error("In Synch item service :error in  preparestatment at the time of deleting data if synch failed");
+					logger.error("In Synch item service :error  : "+e+ "  at the time of deleting data if synch failed");
 				}
 				catch(Exception e)
 	 			{
-					logger.error("In Synch item service :error at the time of deleting data if synch failed");
+					logger.error("In Synch item service :error  : "+e+ " at the time of deleting data if synch failed");
 				}
 				finally
 				{
@@ -1683,7 +1683,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 					{
-						logger.error("In Synch item service :error in closing connection or preparestatement at the time of deleting data if synch failed");
+						logger.error("In Synch item service :error  : "+e+ "  at the time of deleting data if synch failed");
 					}
 				}
 			}
@@ -1749,11 +1749,11 @@ public class Implementation{
 			}
 			catch(SQLException e)
 			{
-				logger.error("In Item Detail Service: error in createstatement or resultset at the time of selection current date");
+				logger.error("In Item Detail Service: error  : "+e+ "  at the time of selection current date");
 			}
 			catch(Exception e)
 			{
-				logger.error("In Item Detail Service: error at the time of selection current date");
+				logger.error("In Item Detail Service: error  : "+e+ " at the time of selection current date");
 			}
 			finally
 			{
@@ -1765,7 +1765,7 @@ public class Implementation{
 				}
 				catch(Exception e)
 				{
-					logger.error("In Item Detail Service: error in closing create statement or resultset at the time of selection current date");
+					logger.error("In Item Detail Service: error  : "+e+ "  at the time of selection current date");
 				}
 			}
 			
@@ -1828,16 +1828,16 @@ public class Implementation{
 			}
 			catch(JSONException e)
 			{
-				logger.error("In Item Detail Service: error in JSON object at the time of fetching active item");
+				logger.error("In Item Detail Service: error  : "+e+ "  at the time of fetching active item");
 			}
 			catch(SQLException e)
 			{
-				logger.error("In Item Detail Service: error in creating statement or resultset at the time of fetching active item");
+				logger.error("In Item Detail Service: error  : "+e+ "  at the time of fetching active item");
 			}
 			catch(Exception e)
 			{
 				
-				logger.error("In Item Detail Service: error at the time of fetching active item");
+				logger.error("In Item Detail Service: error  : "+e+ " at the time of fetching active item");
 			}
 			finally
 			{
@@ -1849,7 +1849,7 @@ public class Implementation{
 				}
 				catch(Exception e)
 				{
-					logger.error("In Item Detail Service: error in closing statement or resultset or connection at the time of fetching active item");
+					logger.error("In Item Detail Service: error  : "+e+ "  at the time of fetching active item");
 				}
 			}
 			
@@ -1934,15 +1934,15 @@ public class Implementation{
 			}
 			catch(JSONException e)
 			{
-				logger.error("In Login Detail Service: error in JSON object at the time of fetching detail");
+				logger.error("In Login Detail Service: error  : "+e+ "  at the time of fetching detail");
 			}
 			catch(SQLException e)
 			{
-				logger.error("In Login Detail Service: error in create statement or result set at the time of fetching detail");
+				logger.error("In Login Detail Service: error  : "+e+ "  at the time of fetching detail");
 			}
 			catch(Exception e)
 			{
-				logger.error("In Login Detail Service: error at the time of fetching detail");
+				logger.error("In Login Detail Service: error  : "+e+ " at the time of fetching detail");
 			}
 			finally
 			{
@@ -1954,7 +1954,7 @@ public class Implementation{
 				}
 				catch(Exception e)
 				{
-					logger.error("In Login Detail Service: error in closing statement or resultset or connection at the time of fetching detail");
+					logger.error("In Login Detail Service: error  : "+e+ "  at the time of fetching detail");
 				}
 			}
 			
@@ -2049,15 +2049,15 @@ public class Implementation{
 				}
 				catch(JSONException e)
 				{
-					logger.error("In Detail of Report Service by Date: error in Json object ");
+					logger.error("In Detail of Report Service by Date: error  : "+e+ " in Json object ");
 				}
 				catch(SQLException e)
 				{
-					logger.error("In Detail of Report Service by Date: error in creating statement or resultset at the time of fetching detail from invoice_hdr within date");
+					logger.error("In Detail of Report Service by Date: error  : "+e+ "  at the time of fetching detail from invoice_hdr within date");
 				}
 				catch(Exception e)
 				{
-					logger.error("In Detail of Report Service by Date: error at the time of fetching detail from invoice_hdr within date");
+					logger.error("In Detail of Report Service by Date: error  : "+e+ " at the time of fetching detail from invoice_hdr within date");
 				}
 				finally
 				{
@@ -2069,7 +2069,7 @@ public class Implementation{
 					}
 					catch(Exception e)
 					{
-						logger.error("In Detail of Report Service by Date: error in closing  statement or resultset or connection at the time of fetching detail from invoice_hdr within date");
+						logger.error("In Detail of Report Service by Date: error  : "+e+ " in closing  statement or resultset or connection at the time of fetching detail from invoice_hdr within date");
 						
 					}
 					
@@ -2159,15 +2159,15 @@ public class Implementation{
 			}
 			catch(JSONException e)
 			{
-				logger.error("In Detail of Invoice id Service by Invoice id: error in json object");
+				logger.error("In Detail of Invoice id Service by Invoice id: error  : "+e+ " in json object");
 			}
 			catch(SQLException e)
 			{
-				logger.error("In Detail of Invoice id Service by Invoice id: error in creating statement or resultset at the time of fetching invoice_hdr detail by invoice id");
+				logger.error("In Detail of Invoice id Service by Invoice id: error : "+e+ "  in creating statement or resultset at the time of fetching invoice_hdr detail by invoice id");
 			}
 			catch(Exception e)
 			{
-				logger.error("In Detail of Invoice id Service by Invoice id: error at the time of fetching invoice_hdr detail by invoice id");
+				logger.error("In Detail of Invoice id Service by Invoice id: error  : "+e+ " at the time of fetching invoice_hdr detail by invoice id");
 			}
 			finally
 			{
@@ -2179,7 +2179,7 @@ public class Implementation{
 				}
 				catch(Exception e)
 				{
-					logger.error("In Detail of Invoice id Service by Invoice id: error in closing statement or resultset or connection at the time of fetching invoice_hdr detail by invoice id");
+					logger.error("In Detail of Invoice id Service by Invoice id: error : "+e+ "  in closing statement or resultset or connection at the time of fetching invoice_hdr detail by invoice id");
 				}
 			}
 			
@@ -2241,15 +2241,15 @@ public class Implementation{
 			}
 			catch(JSONException e)
 			{
-				logger.error("In Geting customer invoice_hdr detail service by mobile: error in json object at the time of fetching invoice_hdr detail by mobile number");
+				logger.error("In Geting customer invoice_hdr detail service by mobile: error  : "+e+ " in json object at the time of fetching invoice_hdr detail by mobile number");
 			}
 			catch(SQLException e)
 			{
-				logger.error("In Geting customer invoice_hdr detail service by mobile: error in creating statement or resultset at the time of fetching invoice_hdr detail by mobile number");
+				logger.error("In Geting customer invoice_hdr detail service by mobile: error : "+e+ "  in creating statement or resultset at the time of fetching invoice_hdr detail by mobile number");
 			}
 			catch(Exception e)
 			{
-				logger.error("In Geting customer invoice_hdr detail service by mobile: error at the time of fetching invoice_hdr detail by mobile number");
+				logger.error("In Geting customer invoice_hdr detail service by mobile: error  : "+e+ " at the time of fetching invoice_hdr detail by mobile number");
 			}
 			finally
 			{
@@ -2261,7 +2261,7 @@ public class Implementation{
 				}
 				catch(Exception e)
 				{
-					logger.error("In Geting customer invoice_hdr service by mobile: error in closing statement or resultset or connection at the time of fetching invoice_hdr detail by mobile number");
+					logger.error("In Geting customer invoice_hdr service by mobile: error  : "+e+ " in closing statement or resultset or connection at the time of fetching invoice_hdr detail by mobile number");
 				}
 			}
 			
@@ -2274,7 +2274,7 @@ public class Implementation{
 /*17.-------------------------SYNCH INVOICE-----------------------------------------------------------------------------*/	
 			
 			
-		public String setInvoice_hdr_Line(String item)
+			public String setInvoice_hdr_Line(String item)
 			{
 				
 				DatabaseConnection db=new DatabaseConnection();
@@ -2284,7 +2284,7 @@ public class Implementation{
 				
 				
 				
-				String maxidhdr="select max(id) from invoice_hdr";    /*selecting max id from both table*/
+				String maxidhdr="select max(id) from invoice_hdr";    /*fetching max id from both table*/
 				String maxidline="select max(id) from invoice_line";
 				
 				Statement st=null;
@@ -2333,17 +2333,28 @@ public class Implementation{
 				}
 				catch(SQLException e)
 				{
-					
+					logger.error("In Synch Invoice Service: error  : "+e+ " in creating ststement or resultset at the time of fetching max id from both table");
+				}
+				catch(Exception e)
+				{
+					logger.error("In Synch Invoice Service: error : "+e+ "  at the time of fetching max id from both table");
+				}
+				finally
+				{
+					try
+					{
+					st.close();
+					st1.close();
+					rs.close();
+					rs1.close();
+					}
+					catch(Exception e)
+					{
+						logger.error("In Synch Invoice Service: error  : "+e+ " in closing statement or resultset at the time of fetching max id from both table");
+					}
 				}
 				
 				
-				//System.out.println(hdrid);
-				//System.out.println(lineid);
-				
-				
-				
-				 
-				// System.out.println(item);
 				 
 				 try
 				 {
@@ -2443,21 +2454,30 @@ public class Implementation{
 						 ps1.executeUpdate();
 						 
 					 }
+				
 					 
-					 
-					 
-					 
+				 }
+				 catch(JSONException e)
+				 {
+					 flag=1;
+					 logger.error("In Synch Invoice Service: error  : "+e+ " in json object");
+				 }
+				 catch(SQLException e)
+				 {
+					 flag=1;
+					 logger.error("In Synch Invoice Service: error : "+e+ "  in preparestatement at the time of synch invoice");
 				 }
 				 catch(Exception e)
 				 {
+					 
 					 flag=1;
-					 System.out.println(e);
+					 logger.error("In Synch Invoice Service: error  : "+e+ " at the time of synch invoice");
 				 }
 				 
 				 
 				
 				 
-				 if(flag==1)
+				 if(flag==1)     /*deleting data if failed*/
 				 {
 					 
 					 String delhdr="delete from invoice_hdr where id>"+hdrid;
@@ -2470,7 +2490,11 @@ public class Implementation{
 					}
 					catch(SQLException e)
 					{
-						
+						logger.error("In Synch Invoice Service: error  : "+e+ " in preparestatement at the time of deleting data if failed");
+					}
+					catch(Exception e)
+					{
+						logger.error("In Synch Invoice Service: error : "+e+ "  at the time of deleting data if failed");
 					}
 					 
 					 
@@ -2487,19 +2511,334 @@ public class Implementation{
 					 }
 					 catch(SQLException e)
 					 {
-						 
+						 logger.error("In Synch Invoice Service: error : "+e+ "  in preparestatement at the time of deleting data if failed"); 
 					 }
-					 
+					 catch(Exception e)
+					 {
+						 logger.error("In Synch Invoice Service: error  : "+e+ "  at the time of deleting data if failed");
+					 }
+					 return "fail";
 					 
 				 }
 				
 				
-				return item;
+				return "success";
 			}
+
+
+/*----------------------------------------GST DETAILS--------------------------------------------------------*/			
+
+    /*18.-------------------------SET GST DETAILS-------------------------------------------------------*/
 			
+		 public void  setGstDetails() {
+				 
+				   
+				   Gst g1=new Gst("C1","5 % IGST",5,"2017-07-01","9999-12-31",5,0,0);
+				   	getGST(g1);
+				   	
+				   	Gst g2=new Gst("C2","5 % CGST & SGST",5,"2017-07-01","9999-12-31",0,2.5,2.5);
+				   	getGST(g2);		   
+				   	
+				   	Gst g3=new Gst("C3","12 % IGST",12,"2017-07-01","9999-12-31",12,0,0);
+				   	getGST(g3);		   
+				   	
+				   	Gst g4=new Gst("C4","12 % CGST & SGST",12,"2017-07-01","9999-12-31",0,6,6);
+				   	getGST(g4);		   
+				   	
+				   	Gst g5=new Gst("C5","18 % IGST",18,"2017-07-01","9999-12-31",18,0,0);
+				   	getGST(g5);		   
+				   	
+				   	Gst g6=new Gst("C6","18 % CGST & SGST",18,"2017-07-01","9999-12-31",0,9,9);
+				   	getGST(g6);	
+				   	
+				   	Gst g7=new Gst("C7","28 % IGST",28,"2017-07-01","9999-12-31",28,0,0);
+				   	getGST(g7);
+				   	
+				   	Gst g8=new Gst("C8","28 % CGST & SGST",28,"2017-07-01","9999-12-31",0,14,14);
+				   	getGST(g8);		   
+				   
+			   }
+			   public void  getGST(Gst g) {
+				   
+				   
+				   DatabaseConnection db=new DatabaseConnection();
+					Connection con=db.getConnection();
+					
+				   String gstSQL="insert into gsttable(gstid,gstdesc,gstper,gststartdate,gstenddate,igst,cgst,sgst)  values(?,?,?,?,?,?,?,?)";
+				   try {
+					   PreparedStatement st=con.prepareStatement(gstSQL);
+					   st.setString(1,g.getGstid());
+					   st.setString(2, g.getGstdesc());
+					   st.setDouble(3, g.getGstper());
+					   st.setString(4, g.getGststartdate());
+					   st.setString(5, g.getGstenddate());
+					   st.setDouble(6, g.getIgst());
+					   st.setDouble(7, g.getCgst());
+					   st.setDouble(8, g.getSgst());
+					
+					   st.executeUpdate();
+				   		}
+				   		catch(SQLException e)
+				   		{
+				   			logger.error("In Set Gst Detail Service: error  : "+e+ " in preparestatement");
+				   		}
+				   
+				   		catch(Exception e) 
+				   		{
+				   			logger.error("In Set Gst Detail Service: error : "+e+ " ");
+				   		}
+				   		
+			   }
 
+			   
+			   
+/*19.-------------------------Show GST Details---------------------------------------------*/
+			   
+			   public String getGstDetails() {
+				   
+				   DatabaseConnection db=new DatabaseConnection();
+					Connection con=db.getConnection();
+				   
+				   String getGst="select  gstid,gstdesc,gstper,igst,cgst,sgst  from gsttable";
+				   
+				   JSONObject jo=new JSONObject();
+				   JSONArray ja=new JSONArray();
+				   JSONArray ja1=new JSONArray();
+				   JSONArray ja2=new JSONArray();
+				   JSONArray ja3=new JSONArray();
+				   JSONArray ja4=new JSONArray();
+				   JSONArray ja5=new JSONArray();
+				   
+				   try {
+				   jo.put("gstid", ja);
+				   jo.put("gstdesc", ja1);
+				   jo.put("gstper", ja2);
+				   jo.put("igst", ja3);
+				   jo.put("cgst", ja4);
+				   jo.put("sgst", ja5);
+				   }
+				   catch(JSONException e)
+				   {
+					   logger.error("In Get GST Details: error : "+e+ "  in JSON object");
+				   }
+				   
+				   
+				   try {
+					
+					   Statement st=con.createStatement();
+					   ResultSet rs=st.executeQuery(getGst);
+					 
+					   while(rs.next()) {
+						  
+					   
+						       ja.put(rs.getString(1));
+						       ja1.put(rs.getString(2));
+						       ja2.put(rs.getDouble(3));
+						       ja3.put(rs.getDouble(4));
+						       ja4.put(rs.getDouble(5));
+						       ja5.put(rs.getDouble(6));
+						       //ja.put(rs.getString(2));
+						 
+						  
+						  // g1.add(g);
+						  
+						   
+					   
+					   }
+					   
+				   }
+				   catch(SQLException e)
+				   {
+					   logger.info("In Show GST service: error : "+e+ " in create statement or resultset at the time of fetching gst details");
+				   }
+				   catch(Exception e)
+				   {
+					   logger.info("In Show GST service: error : "+e+ "  at the time of fetching gst details");
+				   }
+				  
+				   return jo.toString();
+			   }
+			   
+			   
+/*20.-----------------Insert New GST-----------------------------------------------------------*/
+			   
+	   
+	public String insertGST(Gst gi)
+	{
+		
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		
+	int	flag=0;		   
+		String sql="insert into gsttable(gstid,gstdesc,gstper,gststartdate,gstenddate,igst,cgst,sgst) values"
+				   		+ "(?,?,?,?,?,?,?,?)";
+				  
+		
+			JSONObject jo=new JSONObject();	   
+			try {
+					  
+				PreparedStatement st=con.prepareStatement(sql);
+					  
+				st.setString(1, gi.getGstid());  
+				st.setString(2,gi.getGstdesc());
+				st.setDouble(3, gi.getGstper());
+				st.setString(4, gi.getGststartdate());
+				st.setString(5, gi.getGstenddate());
+			    st.setDouble(6, gi.getIgst());
+				st.setDouble(7, gi.getCgst());
+				st.setDouble(8, gi.getSgst());
+				st.executeUpdate();
+				 
+			   }
+				catch(SQLException e)
+				{
+					logger.error("In GST Insert service: error : "+e+" in preparestatement at the time of insert gst");
+				
+					flag=1;
+				}
+				catch(Exception e) 
+				{
+					logger.error("In GST Insert service: error: "+e+" at the time of insert gst");
+					flag=1;
+					  
+					
+				 }
+				   
+				   if(flag==1)
+				   {
+					   try
+					   {
+					   jo.put("check", "failed");
+					   }
+					   catch(Exception e)
+					   {
+						   logger.error("In GST insert service: error"+e);
+					   }
+					   return jo.toString();
+				   }
+				   
+				  try
+				  {
+				   jo.put("check", "success");
+				  }
+				  catch(Exception e)
+				  {
+					  logger.error("In Gst insert service: error"+e);
+					  
+				  }
+				   
+				   return jo.toString();
+			   }
+	
+	
+/*21.---------------------GST Update Service-------------------------------------------*/	
+	
+	
+	public String updateGST(Gst gi)
+	{
+		
+		DatabaseConnection db=new DatabaseConnection();
+		Connection con=db.getConnection();
+		
+		
+	int	flag=0;		   
+	String sql="update gsttable set gstdesc=?,gstper=?,gststartdate=?,gstenddate=?,igst=?,cgst=?,sgst=? "
+				+ "where gstid=?";
+		
+			JSONObject jo=new JSONObject();	
+			
+			String id="'"+gi.getGstid()+"'";
+			String gsttab="select gstid from gsttable where gstid="+id;
+				
+			try
+			{
+				Statement st1=con.createStatement();
+				ResultSet rs=st1.executeQuery(gsttab);
+				if(rs.next()==false)
+				{
+					try
+					{
+					jo.put("check", "gstid_not_found");
+					return jo.toString();
+					}
+					catch(Exception e)
+					{
+						logger.error("In gst update service: error: "+e);
+					}
+				}
+			}
+			catch(SQLException e)
+			{
+				logger.error("In Gst Update Service: error: "+e);
+			}
+			catch(Exception e)
+			{
+				logger.error("In gst update service: error: "+e);
+			}
+				
+				
+			
+			
+			try {
+					  
+				PreparedStatement st=con.prepareStatement(sql);
+					  
+				 
+				st.setString(1,gi.getGstdesc());
+				st.setDouble(2, gi.getGstper());
+				st.setString(3, gi.getGststartdate());
+				st.setString(4, gi.getGstenddate());
+			    st.setDouble(5, gi.getIgst());
+				st.setDouble(6, gi.getCgst());
+				st.setDouble(7, gi.getSgst());
+				st.setString(8, gi.getGstid()); 
+				st.executeUpdate();
+				 
+			   }
+				catch(SQLException e)
+				{
+					logger.error("In GST update service: error "+e);
+				
+					flag=1;
+				}
+				catch(Exception e) 
+				{
+					logger.error("In GST update service: error "+e);
+					flag=1;
+					 
+					
+				 }
+				   
+				   if(flag==1)
+				   {
+					   try
+					   {
+					   jo.put("check", "failed");
+					   }
+					   catch(Exception e)
+					   {
+						   logger.error("In GST insert service: error"+e);
+					   }
+					   return jo.toString();
+				   }
+				   
+				  try
+				  {
+				   jo.put("check", "success");
+				  }
+				  catch(Exception e)
+				  {
+					  logger.error("In Gst insert service: error"+e);
+					  
+				  }
+				   
+				   return jo.toString();
+			   }
+			   
 
-
+	
+	
 
 }
 

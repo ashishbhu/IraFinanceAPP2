@@ -1,13 +1,14 @@
 package com.Ira.IraFinanceAPP1;
 
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class BusinessLogic {
 	
 	
-	final static Logger logger=Logger.getLogger(BusinessLogic.class);
+	 final static  Logger logger=Logger.getLogger(BusinessLogic.class);
 /*1---------------------------OK----- FOR REGISTER NEW USER---------------------------------------------------------------- */
 	
 	public String create(String customerdetail)
@@ -39,7 +40,7 @@ public class BusinessLogic {
 		  }
 		  catch(JSONException e)
 		  {
-			  logger.error("Error in Receiving User Details");
+			  logger.error("In registration service: error: "+e);
 		  }
 		
 		
@@ -120,11 +121,11 @@ public class BusinessLogic {
 		}
 		catch(JSONException e)
 		{
-			logger.error("error in JSON object in login block");
+			logger.error("In login service: error: "+e);
 		}
 		catch(Exception e)
 		{
-			logger.error("error in login block");
+			logger.error("In login service: error: "+e);
 		}
 		
 		logger.info("In login service: trying to login with username is: "+" "+uname);
@@ -188,7 +189,7 @@ public class BusinessLogic {
 		}
 		catch(JSONException e)
 		{
-			logger.error("In temp password service: error in JSON object");
+			logger.error("In temp password service: error :"+e);
 		}
 		
 		if(user.isEmpty())
@@ -226,7 +227,7 @@ public class BusinessLogic {
 		catch(JSONException e)
 		{
 			
-			logger.error("In reset Password Service: error in recieving JSON object");
+			logger.error("In reset Password Service: error :"+e);
 		}
 		
 		
@@ -269,7 +270,7 @@ public class BusinessLogic {
 			}
 			catch(JSONException e)
 			{
-				logger.error("In sub user registration service: error in JSON object");
+				logger.error("In sub user registration service: error :"+e);
 			}
 			catch(Exception e)
 			{
@@ -376,11 +377,11 @@ public class BusinessLogic {
 		    }
 		    catch(JSONException e)
 		    {
-		    	logger.error("In edit sub user access service: error in json object at the time of parsing json object");
+		    	logger.error("In edit sub user access service: error :"+e);
 		    }
 			catch(Exception e)
 		    {
-				logger.error("In edit sub user access service: error at the time of parsing json object");
+				logger.error("In edit sub user access service: error :"+e);
 		    }
 		
 		
@@ -424,7 +425,7 @@ public class BusinessLogic {
 		}
 		catch(Exception e)
 		{
-			logger.error("In shrink item service: error in JSON object object at the time of parsing subid");
+			logger.error("In shrink item service: error :"+e);
 			
 		}
 		
@@ -530,7 +531,7 @@ public class BusinessLogic {
 	{
 		
 		
-		logger.info("In Synch Invoice Servoice: you are trying to synch invoice detail");
+		logger.info("In Synch Invoice Service: you are trying to synch invoice detail");
 		
 		Implementation imp=new Implementation();
 		
@@ -538,7 +539,126 @@ public class BusinessLogic {
 		
 		
 	}
+	
+/*----------------------------------------GST DETAILS--------------------------------------------------------*/
+	
+	/*18.-------------------------Set GST DEtails------------------------------------------------------------*/
+	
+	public void setGstDetails()
+	{
+		
+		Implementation imp=new Implementation();
+		imp.setGstDetails();
+		
+	}
+	
 
+	
+/*19.-------------------------------Show GST-------------------------------------------*/
+	
+	
+	public String getGstDetails()
+	{
+		
+		Implementation imp=new Implementation();
+		return imp.getGstDetails();
+		
+	}
+	
+	
+	
+/*20.-----------------------Insert new Gst-------------------------------------------------------------*/
+	
+	public String insertGST(String gst)
+	{
+		
+		
+		
+
+		   Gst gi=new Gst();
+		   
+		 
+		   
+		   try
+		   {
+			   
+			   JSONObject obj=new JSONObject(gst);
+		   
+		   gi.setGstid(obj.getString("gstid"));
+		   gi.setGstdesc(obj.getString("gstdesc"));
+		   gi.setGstper(obj.getDouble("getper"));
+		  
+		   gi.setGststartdate(obj.getString("sdate"));
+		   gi.setGstenddate(obj.getString("edate"));
+		   gi.setIgst(obj.getDouble("igst"));
+		   gi.setSgst(obj.getDouble("sgst"));
+		   gi.setCgst(obj.getDouble("cgst"));
+		   
+		   }
+		   catch(JSONException e)
+		   {
+			   logger.error("In GST Insert service: error :"+e);
+		   }
+		   
+		   
+		   logger.info("In GST Insert service: You are trying to insert with vauues: Gst_id:"+gi.getGstid()+", Gst_desc:"+gi.getGstdesc()+", Gst_persent:"+
+				   gi.getGstper()+", start_date:"+gi.getGststartdate()+", end_date:"+gi.getGstenddate()+", igst:"+gi.getIgst()+
+				   ", sgst:"+gi.getSgst()+", cgst:"+gi.getCgst());
+		   Implementation imp=new Implementation();
+		
+		   return imp.insertGST(gi);
+		
+	}
+
+	
+/*21.---------------------------Update Gst Table---------------------------------------------------------*/		
+	
+	public String updateGST(String gst)
+	{
+		
+		
+
+		   Gst gi=new Gst();
+		   
+		 
+		   
+		   try
+		   {
+			   
+			   JSONObject obj=new JSONObject(gst);
+		   
+		   gi.setGstid(obj.getString("gstid"));
+		   gi.setGstdesc(obj.getString("gstdesc"));
+		   gi.setGstper(obj.getDouble("getper"));
+		  
+		   gi.setGststartdate(obj.getString("sdate"));
+		   gi.setGstenddate(obj.getString("edate"));
+		   gi.setIgst(obj.getDouble("igst"));
+		   gi.setSgst(obj.getDouble("sgst"));
+		   gi.setCgst(obj.getDouble("cgst"));
+		   
+		   }
+		   catch(JSONException e)
+		   {
+			   logger.error("In GST UPDATE service: error :"+e);
+		   }
+		   
+		   
+		   logger.info("In GST update service: You are trying to update with vauues: Gst_id:"+gi.getGstid()+", Gst_desc:"+gi.getGstdesc()+", Gst_persent:"+
+				   gi.getGstper()+", start_date:"+gi.getGststartdate()+", end_date:"+gi.getGstenddate()+", igst:"+gi.getIgst()+
+				   ", sgst:"+gi.getSgst()+", cgst:"+gi.getCgst());
+		   Implementation imp=new Implementation();
+		
+		   return imp.updateGST(gi);
+		
+		
+		
+		
+	}
+	
+	
+	
+	
 }
 
 

@@ -242,6 +242,74 @@ public class ResourceServices {
 			  {
 				  BusinessLogic bl=new BusinessLogic();
 				  return bl.setInvoice_hdr_Line(item);
-			  }			  
+			  }	
+			  
+			  
+			  
+/*-----------------------------------GST SERVICES-----------------------------------------------------------------*/
+			  
+			  
+	/*18.----------ok------------------------Set GST Details----------------------------------*/
+			  
+			   @GET
+			   @Path("gstentry")
+			   @Consumes(MediaType.APPLICATION_JSON)
+			   public void  setGstDetails()
+			   {
+				   BusinessLogic bl=new BusinessLogic();
+				      bl.setGstDetails();
+				     
+			   }
+		  
+			  
+	/*19.-------------------------------Show GST-------------------------------------------*/
+			   
+			   
+			   @GET
+			   @Path("gstshow")
+			  
+			  @Produces(MediaType.APPLICATION_JSON)
+			   public String getGSTdetails()
+			   {
+				  
+				   BusinessLogic bl=new BusinessLogic();
+				  				  
+				   return bl.getGstDetails();
+				  
+				   
+			   }
+			  
+			  
+/*20.------------------------Insert New Gst ------------------------------------------------------------*/
+			   
+			   @POST
+			   @Path("insertgst")
+			   @Consumes(MediaType.APPLICATION_JSON)
+			   @Produces(MediaType.APPLICATION_JSON)
+			   public String insertGST(String insert)
+			   {
+				   
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.insertGST(insert);
+			   }
+			  
+			  
+/*21.---------------------------Update Gst Table---------------------------------------------------------*/			  
+			  
+			   @PUT
+			   @Path("gstupdate")
+			   @Consumes(MediaType.APPLICATION_JSON)
+			   @Produces(MediaType.APPLICATION_JSON)
+			   public String updateGST(String gstupdate) 
+			   {
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.updateGST(gstupdate);
+			   }
+		   		  
+			  
+			  
+			  
+			  
+			  
 		 
 }   
