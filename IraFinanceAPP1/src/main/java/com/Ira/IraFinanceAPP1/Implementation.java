@@ -2647,7 +2647,7 @@ public class Implementation{
 							if(insert==0)
 							{
 								PreparedStatement ps = con.prepareStatement(hdr);
-							
+				 			
 								ps.setString(1, arr.getString(i));
 								ps.setString(2,arr1.getString(i));
 								ps.setString(3, arr2.getString(i));
