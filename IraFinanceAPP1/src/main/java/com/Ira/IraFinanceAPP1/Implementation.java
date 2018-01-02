@@ -331,9 +331,10 @@ public class Implementation{
 				
 							while(rs1.next())
 							{
-								if(username.equals(rs1.getString(1)))
+								if(user.equals(rs1.getString(1)))
 								{
 									temp=1;
+									System.out.println(user);
 						
 								}
 							}
@@ -370,17 +371,17 @@ public class Implementation{
 								while(rs.next())
 									{   //flag=1;
 	 		
-										if(username.equals(rs.getString(1)))
+										if(user.equals(rs.getString(1)))
 											{     
 												flag=2;
-											//System.out.println("h"); 
+											System.out.println("h"); 
 	 		
 												if(password.equals(rs.getString(2)))
 												
 													{
 														flag=4;
 					
-														jo.put("parentuser", "null");
+														jo.put("parentuser", rs.getString(1));
 														jo.put("check","success" );
 														jo.put("accl",rs.getString(3));
 														jo.put("forcep",rs.getString(4));
@@ -400,7 +401,7 @@ public class Implementation{
 											jo.put("accl",  "null");
 											jo.put("forcep",  "null");
 											jo.put("access","null");
-			  
+											jo.put("akj", "arg1");
 											return jo.toString();    /*---if user name incorrect------*/
 										}
 			 
@@ -452,12 +453,22 @@ public class Implementation{
 					
 					int id=0;
 					ResultSet rs3=null;
+					Statement st3=null;
 					try
 					{
-						st1=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-					    rs3=st1.executeQuery(subu);
+						st3=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+					    rs3=st3.executeQuery(subu);
+					    
+					    if(rs3.next()==false)
+					    {
+					    	
+					    }
+					    else
+					    {
 						rs3.next();
-						id=rs3.getInt(1);            /*-selecting sub user parent id----*/
+						id=rs3.getInt(1); 
+					    }
+					    /*-selecting sub user parent id----*/
 						//System.out.println(id);
 					
 					}
@@ -469,7 +480,7 @@ public class Implementation{
 					{
 						logger.error("In login service: error  : "+e+ ", at the time selecting sub user name");
 					}
-					finally
+					/*finally
 					{
 						try
 						{
@@ -480,7 +491,7 @@ public class Implementation{
 							logger.error("In login service: error  : "+e+ ",  at the time of selecting sub user name");
 						}
 					}
-					
+					*/
 					
 					int flag1=0;
 					ResultSet rs2=null;
@@ -491,7 +502,7 @@ public class Implementation{
 						
 						while(rs2.next())
 						{
-							if(username.equals(rs2.getString(1)))
+							if(user.equals(rs2.getString(1)))
 							{
 										flag1=1;
 									if(password.equals(rs2.getString(2)))
@@ -761,6 +772,18 @@ public class Implementation{
 	
 			int flag=0,temp=0;
 			
+			JSONObject jo=new JSONObject();
+			try
+			{
+			jo.put("check", "success");
+			}
+			catch(Exception e)
+			{
+				logger.error("In Temp Password Service: error: "+e);
+			}
+			
+			
+			
 			String s="'"+user+"'";
 			String rg="update registration set pswd=? where subid=?";
 		
@@ -783,7 +806,11 @@ public class Implementation{
 							}
 						}
 				if(temp==0)
-					return "unotexist";
+				{
+					jo.put("check", "unotexist");
+					return jo.toString();
+				}
+					
 			
 					}
 				catch(SQLException e)
@@ -853,7 +880,7 @@ public class Implementation{
 				    	}
 				    }
 			
-					return "success";
+					return jo.toString();
 			}	
 	
 /*6.----------ok-----------------------RESET PASSWORD----------------------------------------------------*/	
@@ -870,6 +897,17 @@ public class Implementation{
 		
 		int flag=0;
 		
+		JSONObject jo=new JSONObject();
+		try
+		{
+		jo.put("check", "reset");
+		}
+		catch(Exception e)
+		{
+			logger.error("In Reset Password Service: error: "+e);
+		}
+		
+			
 			String rege="select subid from registration";
 		
 				try
@@ -882,6 +920,7 @@ public class Implementation{
 							{
 								if(rs.getString(1).equals(user))/*--Checking user name exist in registration table or not---*/
 									{
+										//System.out.println("main");
 										 flag=1;
 										String rg="update registration set pswd=? where subid=?";
 										String lc="update logincontrol set pswd=? ,forcechgpwd=? where username=?";
@@ -905,6 +944,8 @@ public class Implementation{
 	    		
 											ps.executeUpdate();
 											fcp.executeUpdate();
+											
+											return jo.toString();
 	    	      
 											}
 										catch(SQLException e)
@@ -926,8 +967,7 @@ public class Implementation{
 									}
 							}
 							
-							if(flag==0)
-								return "unoexist";
+							
 							
 					}
 
@@ -946,20 +986,95 @@ public class Implementation{
 					{
 					st.close();
 					rs.close();
-					con.close();
+					
 					}
 					catch(Exception e)
 					{
 						logger.error("In reset password service: error  : "+e+ " at the time of closing statement or resultset or connection");
 					}
 				}
-						return "reset";
+						
 				
+				int temp=0;		
+						
+			if(flag==0)
+			{
+				String sub="select  childUserName from subuser";
+				
+				try
+				{
+					Statement st4=con.createStatement();
+					ResultSet rs4=st4.executeQuery(sub);
+				
+					while(rs4.next())
+					{
+						//System.out.println("sub");
+						if(rs4.getString(1).equals(user))
+						{
+							//System.out.println("sub1");
+							String subu="update subuser set childPassword=? , forcelogin=? where  childUserName=?";
+							String log="update logincontrol set pswd=? ,forcechgpwd=?, forcelogin=? where username=?";
+					
+					
+							PreparedStatement ps1 = con.prepareStatement(subu);
+							PreparedStatement fcp1 = con.prepareStatement(log);
+
+							ps1.setString(1, pass);
+							ps1.setString(2, "false");
+							ps1.setString(3, user);
+						
+							fcp1.setString(1, pass);
+							fcp1.setString(2, "false");
+							fcp1.setString(3, "false");
+							fcp1.setString(4, user);
+
+							ps1.executeUpdate();
+							fcp1.executeUpdate();
+						
+							temp=1;
+							flag=1;
+						
+						
+						}
+					}
+				
+				}
+				catch(Exception e)
+				{
+					logger.error("In Reset Password Service: error: "+e);
+				}
+			
+				if(flag==0 || temp==0)
+				{
+					try
+					{
+					jo.put("check", "unoexist");
+					return jo.toString();
+					}
+					catch(Exception e)
+					{
+						logger.error("In Reset Password Service: error: "+e);
+					}
+				}
+			}			
+				
+				
+			return jo.toString();	
+				
+			
+						
+						
+						
 		
 	}
 	
 
 	
+
+
+
+
+
 /*7.----------ok------------------------SUB USER REGISTRATION----------------------------------------------------*/		
 	
 	public String createSubUser(RegisterSubUser subuser )
@@ -969,10 +1084,17 @@ public class Implementation{
 			Connection con=db.getConnection();
 			
 			
-			 
+			JSONObject jo=new JSONObject();
+			try
+			{
+				jo.put("check", "success");
+			}catch(Exception e)
+			{
+				logger.error("In Sub User Registration Service: error: "+e);
+			}
+			
 			int subid=0 ,flag=0;
 
-			
 			
 			String mu="select  *from registration where subid="+subuser.getMainuser();
 			Statement st=null;
@@ -986,7 +1108,10 @@ public class Implementation{
 				
 				//System.out.println(rs.getString(1));
 				if(rs.next()==false)
-					return "pnotexist";
+				{
+					jo.put("check","pnotexist");
+					return jo.toString();
+				}
 			}
 			catch(SQLException e)
 			{
@@ -1021,7 +1146,10 @@ public class Implementation{
 						
 						while(rs.next())
 							if(rs.getString(1).equals(subuser.getSubuser()))
-								return "subexist";
+							{
+								jo.put("check","subexist");
+								return jo.toString();
+							}
 					}
 					catch(SQLException e)
 					{
@@ -1102,7 +1230,7 @@ public class Implementation{
 						}
 					}
 				
-						return "success";
+						return jo.toString();
 		}		
 
 
@@ -1130,7 +1258,7 @@ public class Implementation{
 		
 		      /*-------checking existance of main user in register table--*/
 		
-				String main="select subId from registration where subid="+username;
+		/*		String main="select subId from registration where subid="+username;
 				Statement st=null;
 				ResultSet rs=null;
 				try
@@ -1140,7 +1268,10 @@ public class Implementation{
 						 rs=st.executeQuery(main);
 						 
 						 if(rs.next()==false)
+						 {
 							 return "munotexist";
+						 }
+							 
 					}
 				catch(SQLException e)
 				{
@@ -1165,7 +1296,7 @@ public class Implementation{
 				}
 		
 		
-		
+		*/
 		
 		      /*----Fetching all user name from subuser table using main user subid--*/
 		
@@ -1180,7 +1311,7 @@ public class Implementation{
 					    
 					    if(rs1.next()==false)
 					    {
-					    	ja.put("null");
+					    	//ja.put();
 					    	return jo.toString();
 					    	
 					    }
@@ -1362,7 +1493,18 @@ public class Implementation{
 			Statement st=null;
 			ResultSet rs=null;
 			
-				
+			
+			JSONObject jo=new JSONObject();
+			
+			try
+			{
+				jo.put("check", "success");
+			}
+			catch(Exception e)
+			{
+				logger.error("In Edit Sub User Access Service: error: "+e);
+			}
+			
 			
 			//System.out.println(pass+access);
 					try  /*---checking sub user exist or not---*/
@@ -1373,7 +1515,11 @@ public class Implementation{
 						 rs=st.executeQuery(sub);
 						  
 						if(rs.next()==false)
-							 return "uincorrect";
+						{
+							jo.put("check", "uincorrect");
+							return jo.toString();
+						}
+							
 							 
 					
 				
@@ -1448,7 +1594,7 @@ public class Implementation{
 					
 				}
 			
-				return "success";
+				return jo.toString();
 		}		
 		
 
@@ -1627,23 +1773,27 @@ public class Implementation{
 					
 					
 							ps.executeUpdate();
+							
+							
 						}
 				
 				}
 			}
 			catch(JSONException e)
 			{
-				System.out.println(e);
+				//System.out.println(e);
 				logger.error("In Synch item service :error  : "+e+ "  at the time parsing data in item table");
+				flag=1;
 			}
 			catch(SQLException e)
 			{
-				System.out.println(e);
+				//System.out.println(e);
 				logger.error("In Synch item service :error  : "+e+ "  at the time of inserting data");
+				flag=1;
 			}
 			catch(Exception e)
 			{
-				System.out.println(e);
+				//System.out.println(e);
 				logger.error("In Synch item service :error  : "+e+ "  at the time of inserting data in item table");
 				flag=1;	
 				
@@ -1658,6 +1808,9 @@ public class Implementation{
 			PreparedStatement ps3=null;
 			if(flag==1)
 			{
+				
+					
+				
 				String del="delete from itemmain where id>"+temp;
 				
 				try
@@ -1686,6 +1839,7 @@ public class Implementation{
 						logger.error("In Synch item service :error  : "+e+ "  at the time of deleting data if synch failed");
 					}
 				}
+				
 			}
 			
 			
@@ -1866,9 +2020,22 @@ public class Implementation{
 			DatabaseConnection db=new DatabaseConnection();
 			Connection con=db.getConnection();
 			
+			
+			
+			JSONObject jo=new JSONObject();
+			
 			String uname="'"+name+"'";
 			
-			JSONObject jo=null;
+			try
+			{
+			
+			
+			//JSONArray ja=new JSONArray();
+			}
+			catch(Exception e)
+			{
+				logger.error("In Login Detail Service: error: "+e);
+			}
 			
 			String log="select *from logincontrol where username="+uname;
 			
@@ -1877,7 +2044,7 @@ public class Implementation{
 			try
 			{
 				
-				 jo=new JSONObject();
+				 
 				
 				JSONArray ja=new JSONArray();
 				JSONArray ja1=new JSONArray();
@@ -1997,22 +2164,27 @@ public class Implementation{
 					JSONArray ja12=new JSONArray();
 					JSONArray ja13=new JSONArray();
 					JSONArray ja14=new JSONArray();
+					JSONArray ja15=new JSONArray();
+					JSONArray ja16=new JSONArray();
 			
 					jo.put("userid", ja);
 					jo.put("invoice_id", ja1);
 					jo.put("invoice_dt", ja2);
-					jo.put("invoice_desc", ja3);
-					jo.put("customer_name", ja4);
-					jo.put("customer_gst", ja5);
-					jo.put("customer_mob", ja6);
-					jo.put("paid_flag", ja7);
-					jo.put("total_disc_amt", ja8);
-					jo.put("paid_via", ja9);
-					jo.put("payment_Ref", ja10);
-					jo.put("total_inv_amt", ja11);
-					jo.put("cgst_amt", ja12);
-					jo.put("sgst_amt", ja13);
-					jo.put("igst_amt" , ja14);
+					//
+					jo.put("customer_name", ja3);
+					jo.put("customer_gst", ja4);
+					jo.put("customer_mob", ja5);
+					jo.put("paid_flag", ja6);
+					jo.put("total_disc_amt", ja7);
+					jo.put("paid_via", ja8);
+					jo.put("payment_Ref", ja9);
+					jo.put("total_inv_amt", ja10);
+					jo.put("cgst_amt", ja11);
+					jo.put("sgst_amt", ja12);
+					jo.put("igst_amt" , ja13);
+					jo.put("customer_email", ja14);
+					jo.put("total_gst", ja15);
+					jo.put("parent_id", ja16);
 			
 			
 					/*fetching data from invoice_hdr*/
@@ -2041,6 +2213,9 @@ public class Implementation{
 						ja12.put(rs.getDouble(14));
 						ja13.put(rs.getDouble(15));
 						ja14.put(rs.getDouble(16));
+						ja15.put(rs.getString(17));
+						ja16.put(rs.getString(18));
+						//ja14.put(rs.getString(19));
 					
 					}
 			
@@ -2112,22 +2287,28 @@ public class Implementation{
 			JSONArray ja12=new JSONArray();
 			JSONArray ja13=new JSONArray();
 			JSONArray ja14=new JSONArray();
+			JSONArray ja15=new JSONArray();
+			JSONArray ja16=new JSONArray();
 			
 			jo.put("userid", ja);
 			jo.put("invoice_id", ja1);
 			jo.put("invoice_dt", ja2);
-			jo.put("invoice_desc", ja3);
-			jo.put("customer_name", ja4);
-			jo.put("customer_gst", ja5);
-			jo.put("customer_mob", ja6);
-			jo.put("paid_flag", ja7);
-			jo.put("total_disc_amt", ja8);
-			jo.put("paid_via", ja9);
-			jo.put("payment_Ref", ja10);
-			jo.put("total_inv_amt", ja11);
-			jo.put("cgst_amt", ja12);
-			jo.put("sgst_amt", ja13);
-			jo.put("igst_amt" , ja14);
+			//
+			jo.put("customer_name", ja3);
+			jo.put("customer_gst", ja4);
+			jo.put("customer_mob", ja5);
+			jo.put("paid_flag", ja6);
+			jo.put("total_disc_amt", ja7);
+			jo.put("paid_via", ja8);
+			jo.put("payment_Ref", ja9);
+			jo.put("total_inv_amt", ja10);
+			jo.put("cgst_amt", ja11);
+			jo.put("sgst_amt", ja12);
+			jo.put("igst_amt" , ja13);
+			jo.put("customer_email", ja14);
+			jo.put("total_gst", ja15);
+			jo.put("parent_id", ja16);
+			
 			
 					/*fetching invoice_hdr detail by invoice id*/
 			
@@ -2153,6 +2334,8 @@ public class Implementation{
 					ja12.put(rs.getDouble(14));
 					ja13.put(rs.getDouble(15));
 					ja14.put(rs.getDouble(16));
+					ja15.put(rs.getDouble(17));
+					ja16.put(rs.getDouble(18));
 				
 			 	}
 			 
@@ -2274,18 +2457,25 @@ public class Implementation{
 /*17.-------------------------SYNCH INVOICE-----------------------------------------------------------------------------*/	
 			
 			
-			public String setInvoice_hdr_Line(String item)
+			public String setInvoice_hdr(String item)
 			{
 				
 				DatabaseConnection db=new DatabaseConnection();
 				Connection con=db.getConnection();
 				
 				int flag=0, inserthdr=0, insertline=0;
-				
-				
+				//System.out.println(item);
+				JSONObject jo=new JSONObject();
+				try
+				{
+					jo.put("check", "success");
+				}catch(Exception e)
+				{
+					logger.error("In Synch Invoice Service: error: "+e);
+				}
 				
 				String maxidhdr="select max(id) from invoice_hdr";    /*fetching max id from both table*/
-				String maxidline="select max(id) from invoice_line";
+				//String maxidline="select max(id) from invoice_line";
 				
 				Statement st=null;
 				Statement st1=null;
@@ -2316,37 +2506,37 @@ public class Implementation{
 						}
 						
 						
-						st1=con.createStatement();
-						rs1=st1.executeQuery(maxidline);
+						//st1=con.createStatement();
+						//rs1=st1.executeQuery(maxidline);
 						
-						if(rs1.next()==false)
-						{
-							insertline=1;
+						//if(rs1.next()==false)
+						//{
+						//	insertline=1;
 							
-						}
-						else
-						{
-							lineid=rs1.getInt(1);
+					//	}
+					//	else
+					//	{
+						//	lineid=rs1.getInt(1);
 							
-						}
+					//	}
 						
 				}
 				catch(SQLException e)
 				{
-					logger.error("In Synch Invoice Service: error  : "+e+ " in creating ststement or resultset at the time of fetching max id from both table");
+					logger.error("In Synch Invoice Service: error  : "+e+ " in creating ststement or resultset at the time of fetching max id invoice_hdr");
 				}
 				catch(Exception e)
 				{
-					logger.error("In Synch Invoice Service: error : "+e+ "  at the time of fetching max id from both table");
+					logger.error("In Synch Invoice Service: error : "+e+ "  at the time of fetching max id from invoice_hdr");
 				}
 				finally
 				{
 					try
 					{
 					st.close();
-					st1.close();
+					//st1.close();
 					rs.close();
-					rs1.close();
+					//rs1.close();
 					}
 					catch(Exception e)
 					{
@@ -2358,77 +2548,145 @@ public class Implementation{
 				 
 				 try
 				 {
-					 JSONObject obj=new JSONObject(item);
+					 JSONObject objmain=new JSONObject(item);
+					 JSONArray  arrmain=objmain.getJSONArray("invoice");
+					 JSONObject objhdr=arrmain.getJSONObject(0);
+					 
+					 //String name=objhdr.getString("username");
+					 //JSONArray ja=new JSONArray(objhdr.getString("username"));
+					 
+					 //for(int i=0; i<ja.length(); i++)
+						 //System.out.println(ja.getString(i));
+					 
+					//System.out.println(ja);
+					 
+					 JSONArray arr=new JSONArray(objhdr.getString("username"));
+					 JSONArray arr1=new JSONArray(objhdr.getString("invoiceId"));
+					 JSONArray arr2=new JSONArray(objhdr.getString("invoiceDate"));
+					 JSONArray arr3=new JSONArray(objhdr.getString("customerName"));
+					 JSONArray arr4=new JSONArray(objhdr.getString("customerGst"));
+					 JSONArray arr5=new JSONArray(objhdr.getString("customerMobile"));
+					 JSONArray arr6=new JSONArray(objhdr.getString("paidFlag"));
+					 JSONArray arr7=new JSONArray(objhdr.getString("totalDiscount"));
+					 JSONArray arr8=new JSONArray(objhdr.getString("paidVia"));
+					 JSONArray arr9=new JSONArray(objhdr.getString("paymentRef"));
+					 JSONArray arr10=new JSONArray(objhdr.getString("totalInvoiceAmount"));
+					 JSONArray arr11=new JSONArray(objhdr.getString("cGstAmount"));
+					 
+					 JSONArray arr12=new JSONArray(objhdr.getString("sGstAmount"));
+					 JSONArray arr13=new JSONArray(objhdr.getString("iGstAmount"));
+					 JSONArray arr14=new JSONArray(objhdr.getString("customerEmail"));
+					 JSONArray arr15=new JSONArray(objhdr.getString("gstAmount"));
+					 JSONArray arr16=new JSONArray(objhdr.getString("parentUser"));
+					 
+					 for(int i=0; i<arr.length(); i++)
+					 System.out.println(arr.getInt(i));
+					 
+					/*{
+					 JSONArray arr =   objhdr.getJSONArray("username"); 
+					 JSONArray arr1 =  objhdr.getJSONArray("invoiceId");
+					 JSONArray arr2 =  objhdr.getJSONArray("invoiceDate");
+					 JSONArray arr3 =  objhdr.getJSONArray("customerName");
+					 JSONArray arr4 =  objhdr.getJSONArray("customerGst");
+					 JSONArray arr5 =  objhdr.getJSONArray("customerMobile");
+					 JSONArray arr6 =  objhdr.getJSONArray("paidFlag");
+					 JSONArray arr7 =  objhdr.getJSONArray("totalDiscount");
+					 JSONArray arr8 =  objhdr.getJSONArray("paidVia");
+					 JSONArray arr9 =  objhdr.getJSONArray("paymentRef");
+					 JSONArray arr10 = objhdr.getJSONArray("totalInvoiceAmount");
+					 JSONArray arr11 = objhdr.getJSONArray("cGstAmount");
+					 JSONArray arr12 = objhdr.getJSONArray("sGstAmount");
+					 JSONArray arr13 = objhdr.getJSONArray("iGstAmount");
+					 JSONArray arr14=  objhdr.getJSONArray("customerEmail");
+					 JSONArray arr15=  objhdr.getJSONArray("gstAmount");
+					 JSONArray arr16 = objhdr.getJSONArray("parentUser");
+					 
+					 //JSONArray arr17 = obj.getJSONArray("invoice_item_seq");
+					// JSONArray arr18 = obj.getJSONArray("item_id");
+					// JSONArray arr19 = obj.getJSONArray("item_qty");
+					// JSONArray arr20 = obj.getJSONArray("item_rate");
+					 //JSONArray arr18=obj.getJSONArray("customer_email");
+					 //JSONArray arr19=obj.getJSONArray("total_gst");
+					 //JSONArray arr20 = obj.getJSONArray("parent_id");
+					// JSONArray arr21 = obj.getJSONArray("item_version");
+					// JSONArray arr22 = obj.getJSONArray("item_gst");
+					 //JSONArray arr23=obj.getJSONArray("item_name");
+					// JSONArray arr24 = obj.getJSONArray("item_net_amount");
 					
-					 JSONArray arr = obj.getJSONArray("userid");
-					 JSONArray arr1 = obj.getJSONArray("invoice_id");
-					 JSONArray arr2 = obj.getJSONArray("invoice_dt");
-					 JSONArray arr3 = obj.getJSONArray("invoice_desc");
-					 JSONArray arr4 = obj.getJSONArray("customer_name");
-					 JSONArray arr5 = obj.getJSONArray("customer_gst");
-					 JSONArray arr6 = obj.getJSONArray("customer_mob");
-					 JSONArray arr7 = obj.getJSONArray("paid_flag");
-					 JSONArray arr8 = obj.getJSONArray("total_disc_amt");
-					 JSONArray arr9 = obj.getJSONArray("paid_via");
-					 JSONArray arr10 = obj.getJSONArray("payment_Ref");
-					 JSONArray arr11 = obj.getJSONArray("total_inv_amt");
-					 JSONArray arr12 = obj.getJSONArray("cgst_amt");
-					 JSONArray arr13 = obj.getJSONArray("sgst_amt");
-					 JSONArray arr14 = obj.getJSONArray("igst_amt");
-					 JSONArray arr15 = obj.getJSONArray("invoice_item_seq");
-					 JSONArray arr16 = obj.getJSONArray("item_id");
-					 JSONArray arr17 = obj.getJSONArray("item_uom");
-					 JSONArray arr18 = obj.getJSONArray("item_qty");
-					 JSONArray arr19 = obj.getJSONArray("item_rate");
-					 JSONArray arr20 = obj.getJSONArray("item_dis_rt");
-					 JSONArray arr21 = obj.getJSONArray("total_dis_on_item");
+					}*/
 					 
-					 
-					
-				
-					 
-					 String hdr="insert into invoice_hdr(userid,invoice_id, invoice_dt, invoice_desc, customer_name,"
+					 String hdr="insert into invoice_hdr(userid,invoice_id, invoice_dt,customer_name,"
 					 		+ "customer_gst, customer_mob,paid_flag,total_disc_amt, paid_via, payment_Ref, "
-					 		+ "total_inv_amt, cgst_amt,sgst_amt,igst_amt ) "
-					 		+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					 		+ "total_inv_amt, cgst_amt,sgst_amt,igst_amt,customer_email,total_gst,parent_id ) "
+					 		+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 					 
-					 for(int i=0; i<arr.length() && i<arr2.length() && i<arr3.length() && i<arr4.length() && i<arr5.length() && i<arr6.length() && i<arr7.length() && i<arr8.length() && i<arr9.length() && i<arr10.length() && i<arr11.length() && i<arr12.length() && i<arr13.length() && i<arr14.length(); i++)
+					 for(int i=0; i<arr.length() && i<arr1.length() && i<arr2.length() && i<arr3.length() && i<arr4.length() && 
+							 i<arr5.length() && i<arr6.length() && i<arr7.length() && i<arr8.length() && 
+							 i<arr9.length() && i<arr10.length() && i<arr11.length() && i<arr12.length() && 
+							 i<arr13.length() && i<arr14.length() && i<arr15.length()&& i<arr16.length(); i++)
 					 {
 						
-						 //System.out.print(arr.getInt(i));
 						 
-						 PreparedStatement ps = con.prepareStatement(hdr);
+						 String hd="select invoice_id from invoice_hdr";
+						 
+						    st1=con.createStatement();
+							rs1=st1.executeQuery(hd);
 							
-						 ps.setInt(1, arr.getInt(i));
-						 ps.setString(2,arr1.getString(i));
-						 ps.setString(3, arr2.getString(i));
-						 ps.setString(4, arr3.getString(i));
-						 ps.setString(5, arr4.getString(i));
-						 ps.setString(6, arr5.getString(i));
-						 ps.setString(7, arr6.getString(i));
-						 ps.setString(8, arr7.getString(i));
-						 ps.setString(9, arr8.getString(i));
-						 ps.setString(10, arr9.getString(i));
-						 ps.setString(11, arr10.getString(i));
-						 ps.setString(12, arr11.getString(i));
-						 ps.setDouble(13, arr12.getDouble(i));
-						 ps.setDouble(14, arr13.getDouble(i));
-						 ps.setDouble(15, arr14.getDouble(i));
+							int insert=0;
+							while(rs1.next())
+							{
+								if(rs1.getString(1).equals(arr2.getString(i)))
+								{
+									insert=1;
+								}
+							}
 						 
-						 ps.executeUpdate();
+						 
+						 //System.out.print(arr.getInt(i));
+						
+							if(insert==0)
+							{
+								PreparedStatement ps = con.prepareStatement(hdr);
+							
+								ps.setString(1, arr.getString(i));
+								ps.setString(2,arr1.getString(i));
+								ps.setString(3, arr2.getString(i));
+								ps.setString(4, arr3.getString(i));
+								ps.setString(5, arr4.getString(i));
+								ps.setString(6, arr5.getString(i));
+								ps.setString(7, arr6.getString(i));
+								ps.setString(8, arr7.getString(i));
+								ps.setString(9, arr8.getString(i));
+								ps.setString(10, arr9.getString(i));
+								ps.setString(11, arr10.getString(i));
+								ps.setString(12, arr11.getString(i));
+								ps.setDouble(13, arr12.getDouble(i));
+								ps.setDouble(14, arr13.getDouble(i));
+								ps.setDouble(15, arr14.getDouble(i));
+								ps.setString(16, arr15.getString(i));
+								ps.setString(17, arr16.getString(i));
+						
+						 
+								ps.executeUpdate();
+							}
 						 
 					 }
 					 
 					 
 					 
 					
+					/* { 
+					 String line="insert into invoice_line(userid,invoice_id, invoice_dt,invoice_item_seq,"
+					 		+ " item_id,item_qty,item_rate,total_dis_amt,cgst_amt, sgst_amt, igst_amt,"
+					 		+ "item_version,parent_id,item_gst,item_name,item_net_amount)"
+					 		+ " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 					 
-					 String line="insert into invoice_line(userid,invoice_id, invoice_dt, invoice_item_seq,"
-					 		+ " item_id,invoice_desc, item_uom, item_qty,item_rate, item_dis_rt,total_dis_on_item,"
-					 		+ " total_dis_amt,cgst_amt, sgst_amt, igst_amt) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 					 
-					 
-					 for(int i=0; i<arr.length() && i<arr1.length() && i<arr2.length() && i<arr15.length() && i<arr16.length() && i<arr3.length() && i<arr17.length() && i<arr18.length() && i<arr19.length() && i<arr20.length() && i<arr21.length() && i<arr8.length() && i<arr12.length() && i<arr13.length() && i<arr14.length(); i++)
+					 for(int i=0; i<arr.length() && i<arr1.length() && i<arr2.length() &&
+							 i<arr17.length() && i<arr18.length() && i<arr19.length() && i<arr20.length() &&
+							 i<arr7.length() && i<arr11.length() && i<arr12.length() && i<arr13.length() &&
+							 i<arr21.length() && i<arr16.length() && i<arr22.length() && i<arr23.length() && 
+							 i<arr24.length(); i++)
 					 {
 						 
 						 
@@ -2437,24 +2695,26 @@ public class Implementation{
 						 ps1.setString(1, arr.getString(i));
 						 ps1.setString(2, arr1.getString(i));
 						 ps1.setString(3, arr2.getString(i));
-						 ps1.setString(4, arr15.getString(i));
-						 ps1.setString(5, arr16.getString(i));
-						 ps1.setString(6, arr3.getString(i));
-						 ps1.setString(7, arr17.getString(i));
-						 ps1.setString(8, arr18.getString(i));
-						 ps1.setString(9, arr19.getString(i));
-						 ps1.setString(10, arr20.getString(i));
-						 ps1.setString(11, arr21.getString(i));
-						 ps1.setString(12, arr8.getString(i));
-						 ps1.setString(13, arr12.getString(i));
-						 ps1.setString(14, arr13.getString(i));
-						 ps1.setString(15, arr14.getString(i));
-						 
+						 ps1.setString(4, arr17.getString(i));
+						 ps1.setString(5, arr18.getString(i));
+						 ps1.setString(6, arr19.getString(i));
+						 ps1.setString(7, arr20.getString(i));
+						 ps1.setString(8, arr7.getString(i));
+						 ps1.setString(9, arr11.getString(i));
+						 ps1.setString(10, arr12.getString(i));
+						 ps1.setString(11, arr13.getString(i));
+						 //ps1.setString(12, arr14.getString(i));
+						 ps1.setString(12, arr21.getString(i));
+						 ps1.setString(13, arr16.getString(i));
+						 //ps1.setString(15, arr22.getString(i));
+						 ps1.setString(14,arr22.getString(i));
+						 ps1.setString(15,arr23.getString(i));
+						 ps1.setString(16,arr24.getString(i));
 						 
 						 ps1.executeUpdate();
 						 
 					 }
-				
+					 }*/
 					 
 				 }
 				 catch(JSONException e)
@@ -2500,7 +2760,7 @@ public class Implementation{
 					 
 					 
 					 
-					 
+					/*{ 
 					 String delline="delete from invoice_line where id>"+lineid;
 					 
 					 try
@@ -2517,12 +2777,33 @@ public class Implementation{
 					 {
 						 logger.error("In Synch Invoice Service: error  : "+e+ "  at the time of deleting data if failed");
 					 }
-					 return "fail";
+					 
+					 {
+						 try
+						 {
+						 jo.put("check", "fail");
+						 return jo.toString();
+						 }
+						 catch(Exception e)
+						 {
+							logger.error("In Synch Invoce Service: error: "+e); 
+						 }
+						 
+					 }}*/
 					 
 				 }
+				 try
+				 {
+				 jo.put("check", "fail");           /* If insertion fail*/
+				 return jo.toString();
+				 }
+				 catch(Exception e)
+				 {
+					logger.error("In Synch Invoce Service: error: "+e); 
+				 }
 				
-				
-				return "success";
+				 
+				 return jo.toString();
 			}
 
 

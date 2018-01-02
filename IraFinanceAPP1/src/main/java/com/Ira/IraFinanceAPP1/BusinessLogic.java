@@ -106,7 +106,7 @@ public class BusinessLogic {
 		uname= obj.getString("uname");
 		pass= obj.getString("pass");
 		
-		logger.info("trying to login with user name: "+uname);
+		//logger.info("trying to login with user name: "+uname);
 		if(uname.isEmpty())
 			return "You must enter username";
 		if(uname.length()>10)
@@ -527,15 +527,15 @@ public class BusinessLogic {
 	
 /*17.----------ok---------------SYNCH INVOICE----------------------------------------------------------------------------*/	
 	
-	public String setInvoice_hdr_Line(String item)
+	public String setInvoice_hdr(String item)
 	{
 		
 		
-		logger.info("In Synch Invoice Service: you are trying to synch invoice detail");
+		logger.info("In Synch Invoice Service: you are trying to synch invoice detail in invoice_hdr");
 		
 		Implementation imp=new Implementation();
 		
-		return imp.setInvoice_hdr_Line(item);
+		return imp.setInvoice_hdr(item);
 		
 		
 	}

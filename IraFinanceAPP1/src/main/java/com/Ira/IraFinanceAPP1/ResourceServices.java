@@ -241,7 +241,7 @@ public class ResourceServices {
 			  public String invoiceHDR_Line(String item)
 			  {
 				  BusinessLogic bl=new BusinessLogic();
-				  return bl.setInvoice_hdr_Line(item);
+				  return bl.setInvoice_hdr(item);
 			  }	
 			  
 			  
@@ -269,6 +269,7 @@ public class ResourceServices {
 			   @Path("gstshow")
 			  
 			  @Produces(MediaType.APPLICATION_JSON)
+			   
 			   public String getGSTdetails()
 			   {
 				  
