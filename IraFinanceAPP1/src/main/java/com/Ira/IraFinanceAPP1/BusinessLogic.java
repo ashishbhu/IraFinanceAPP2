@@ -439,18 +439,27 @@ public class BusinessLogic {
 	
 /*12.----------ok----------------GET ITEM DETAIL BY SUB ID WHICH ITEM IS ACTIVE------------------------------------------*/	
 
-	public String getAllItem(String id)
+	public String getAllItem(String id,String date)
 	{
 		
 		if(id.isEmpty())
 			return "You must enter sub id";
 		if(id.length()>10)
 			return "Subid can't be graeter than 10 digits";
+		if(date.isEmpty())
+			return "date can't be empty";
+		if(date.matches("([0-9]{4})-([0-9]{2})-([0-9]{2})"))
+		{
+			
+		}
+		else
+			return "date format not correct";
+		
 		
 		logger.info("In Item Detail Service: you are trying to see all item detail by subid: "+id);
 		
 		Implementation imp=new Implementation();
-		return imp.getAllItem(id);
+		return imp.getAllItem(id,date);
 		
 	}
 	
@@ -462,8 +471,8 @@ public class BusinessLogic {
 		
 		if(username.isEmpty())
 			return "You must enter username";
-		if(username.length()>10)
-			return "username can't be greater than 10 character";
+		//if(username.length()>10)
+			//return "username can't be greater than 10 character";
 		
 		logger.info("In Login Detail Service: you are trying to see user detail of :"+username);
 		
@@ -475,17 +484,17 @@ public class BusinessLogic {
 	
 /*14.------ok------------------DETAILS OF REPORT by Date-------------------------------------------------------------------*/	
 	
-	public String getReportHDR(String date1,String date2)
+	public String getReportHDR(String parent,String date1,String date2)
 	{
 		
 		if(date1.isEmpty() && date2.isEmpty())
 			return "You must enter dates";
 		
-		logger.info("In Details of Report Service by Date: You are trying to see invoice_hdr detail within date: "+date1+" and " + date2);
+		logger.info("In Details of Report Service by Date: You are trying to see invoice_hdr detail within :user: "+parent+" and "+date1+" and " + date2);
 		
 		Implementation imp=new Implementation();
 		
-		return imp.getReportHDR(date1,date2);
+		return imp.getReportHDR(parent,date1,date2);
 		
 	}
 

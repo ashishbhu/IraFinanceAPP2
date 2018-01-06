@@ -1,12 +1,35 @@
 package com.Ira.IraFinanceAPP1;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Properties;
 
+
+
+import java.io.File;
+import java.util.*;  
+import javax.mail.*;  
+import javax.mail.internet.*;  
+import javax.activation.*; 
 
 import org.apache.log4j.*;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+
 
 
 
@@ -16,6 +39,7 @@ public class Implementation{
 	
 	 
 	  final static Logger logger=Logger.getLogger(Implementation.class);
+private static final String Syatem = null;
 	 
 	  
 		public String create(RegisterUser userdetails) {
@@ -224,8 +248,8 @@ public class Implementation{
 		    		    	
 		    		    	
 		    		     	/*----------------Insert into logincontrol----------------*/
-		    			   String log="insert into logincontrol(username,pswd,acctlocked,forcechgpwd,access,forcelogin)"
-							 + "values(?,?,?,?,?,?)";
+		    			   String log="insert into logincontrol(username,pswd,acctlocked,forcechgpwd,access,forcelogin, parentid)"
+							 + "values(?,?,?,?,?,?,?)";
 		    			
 		    			   PreparedStatement st2=null;
 		    			   try
@@ -240,6 +264,7 @@ public class Implementation{
 		    				st2.setString(4, "false");
 		    				st2.setInt(5, 15);
 		    				st2.setString(6, "true");
+		    				st2.setInt(7, id);
 		    				
 		    				st2.executeUpdate();
 		    				
@@ -321,8 +346,8 @@ public class Implementation{
 				ResultSet rs1=null;
 				String log="select *from logincontrol";
 	 
-				
-				String reg="select subid from registration";
+				String mail=null;
+				String reg="select subid, emailid from registration";
 					/*-----------Checking user exist in registration tbale or not----------------*/
 					try
 					{
@@ -334,9 +359,25 @@ public class Implementation{
 								if(user.equals(rs1.getString(1)))
 								{
 									temp=1;
-									System.out.println(user);
+									mail=rs1.getString(2);
+									//System.out.println(mail);
+									//break;
 						
 								}
+							}
+							if(temp==0) /* if user not exist in registration table */
+							{
+								
+
+								jo.put("parentuser", "null");
+								jo.put("check", "uincorrect" );
+								jo.put("accl",  "null");
+								jo.put("forcep",  "null");
+								jo.put("access","null");
+								//jo.put("akj", "arg1");
+								jo.put("email","null");
+								return jo.toString(); 
+								
 							}
 				
 					}
@@ -374,7 +415,7 @@ public class Implementation{
 										if(user.equals(rs.getString(1)))
 											{     
 												flag=2;
-											System.out.println("h"); 
+											//System.out.println("h"); 
 	 		
 												if(password.equals(rs.getString(2)))
 												
@@ -386,8 +427,10 @@ public class Implementation{
 														jo.put("accl",rs.getString(3));
 														jo.put("forcep",rs.getString(4));
 														jo.put("access", rs.getInt(5));
+														jo.put("email",mail);
 			 		  
-														return jo.toString();     /*---if user and pass exist in logincontrol----*/
+														//System.out.println(jo.toString());
+														return jo.toString(); /*---if user and pass exist in logincontrol----*/
 					
 													}
 	 				
@@ -401,7 +444,8 @@ public class Implementation{
 											jo.put("accl",  "null");
 											jo.put("forcep",  "null");
 											jo.put("access","null");
-											jo.put("akj", "arg1");
+											//jo.put("akj", "arg1");
+											jo.put("email","null");
 											return jo.toString();    /*---if user name incorrect------*/
 										}
 			 
@@ -412,6 +456,7 @@ public class Implementation{
 											jo.put("accl",  "null");
 											jo.put("forcep",  "null");
 											jo.put("access","null");
+											jo.put("email","null");
 			  
 											return jo.toString();  /*---------if password incorrect--------*/
 										}
@@ -492,13 +537,18 @@ public class Implementation{
 						}
 					}
 					*/
-					
+					String submail="select  emailid from registration where subid="+id;
 					int flag1=0;
+					String submailid=null;
 					ResultSet rs2=null;
 					try       /*----checking user name and password of subuser is exist or  not-----*/
 					{
 						st1=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 						rs2=st1.executeQuery(login);
+						
+						ResultSet rs7=st1.executeQuery(submail);
+						rs7.next();
+						submailid=rs7.getString(1);
 						
 						while(rs2.next())
 						{
@@ -514,7 +564,7 @@ public class Implementation{
 											jo.put("accl",rs2.getString(3));
 											jo.put("forcep",rs2.getString(4));
 											jo.put("access", rs2.getInt(5));
-										
+											jo.put("email",submailid);
 											return jo.toString();   /*---if subuser name and password exist--*/
 											
 	
@@ -531,7 +581,7 @@ public class Implementation{
 							jo.put("accl",  "null");
 							jo.put("forcep",  "null");
 							jo.put("access","null");
-  
+							jo.put("email","null");
 							return jo.toString();   /*---if subuser id is incorrect----*/
 						}
 						
@@ -542,7 +592,7 @@ public class Implementation{
 							jo.put("accl",  "null");
 							jo.put("forcep",  "null");
 							jo.put("access","null");
-  
+							jo.put("email","null");
 							return jo.toString();   /*----if subuser password incorrect---*/
 						}
 						
@@ -1407,28 +1457,32 @@ public class Implementation{
 							 
 						 }
 						 
-						 //rs.previous();
-						while(rs.next())
+						 else
+						 {
 							if(rs.getString(1).equals(username))/*--when subuser exist--*/
-								{    
+								{   
+								
 									flag=1;
-									break;
+									//break;
 								}
+						 }
 						
 						if(flag==1)
 							{
 								while(rs1.next())
 									if(rs1.getString(1).equals(username))
-										if(rs1.getString(3).equals("false"))/*--when accl is not lock--*/
+									{ 
+										
+										if(rs1.getString(4).equals("false"))/*--when accl is not lock--*/
 											{   flag=2;
 	    		
 												jo.put("check","suexist");
 												jo.put("accl", "false");
 												jo.put("access", rs1.getString(5));
-	    			 
+													
 												//return jo.toString(); /*--when sub user exist and accl not lock--*/
 											}
-							}
+							}	}
 	     	
 	     	
 					}
@@ -1876,7 +1930,7 @@ public class Implementation{
 /*12.--------ok------------------GET ITEM DETAIL BY SUB ID WHICH ITEM IS ACTIVE------------------------------*/		
 		
 		
-		public String getAllItem(String id)
+		public String getAllItem(String id,String date)
 		{
 			
 
@@ -1885,46 +1939,18 @@ public class Implementation{
 			
 			int flag=0;
 			
-			String dat="select subdate(curdate(),1) from dual";
+			
+			//String dat="select  startdate from itemmain where startDate<'"+date+"' order by startdate desc limit 1";
 			
 			
 			Statement st1=null;
 			ResultSet rs1=null;
-			String datestring=null;      /*selecting current date */
-			try
-			{
-				 st1=con.createStatement();
-				 rs1=st1.executeQuery(dat); 
-				rs1.next();
-				String dat1=rs1.getString(1);
-				datestring="'"+dat1+"'";
-				
-				
-			}
-			catch(SQLException e)
-			{
-				logger.error("In Item Detail Service: error  : "+e+ "  at the time of selection current date");
-			}
-			catch(Exception e)
-			{
-				logger.error("In Item Detail Service: error  : "+e+ " at the time of selection current date");
-			}
-			finally
-			{
-				try
-				{
-					
-				st1.close();
-				rs1.close();
-				}
-				catch(Exception e)
-				{
-					logger.error("In Item Detail Service: error  : "+e+ "  at the time of selection current date");
-				}
-			}
-			
+			String datestring="'"+date+"'";      /*selecting current date */
 			
 			String itemdetail="select *from itemmain where enddate>="+datestring +"and subid="+id;
+			
+			//JSONObject objmain=new JSONObject();
+			//JSONArray jamain=new JSONArray();
 			
 			JSONObject jo=new JSONObject();
 			Statement st=null;
@@ -1946,7 +1972,8 @@ public class Implementation{
 					JSONArray ja8=new JSONArray();
 					JSONArray ja9=new JSONArray();
 					JSONArray ja10=new JSONArray();
-			
+					
+					
 					jo.put("subid", ja);
 					jo.put("itemid", ja1);
 					jo.put("itemname", ja2);
@@ -1959,9 +1986,23 @@ public class Implementation{
 					jo.put("count", ja9);
 					jo.put("version", ja10);
 						
-						while(rs.next())
+					if(rs.next()==false)
+					{
+						//jamain.put(jo);
+						//objmain.put("check", "fail");
+						//objmain.put("item", jamain);
+						//return objmain.toString();
+						
+						jo.put("check", "fail");
+						return jo.toString();
+					}
+					int i=0;
+					rs.previous();
+					while(rs.next())
 							{
-				
+								System.out.println(++i);
+								flag=1;
+								//objmain.put("check", "success");
 								ja.put(rs.getInt(2));
 								ja1.put(rs.getString(3));
 								ja2.put(rs.getString(4));
@@ -1975,23 +2016,68 @@ public class Implementation{
 								ja10.put(rs.getString(12));
 				
 				
-				
+								String itemid=rs.getString(3);
+								String item="'"+itemid+"'";
+								int version=Integer.parseInt(rs.getString(12))-1;
+								//System.out.println(version);
+								
+								String olditem="select *from itemmain where itemId="+item+"and version="+version +" and subid="+id;
+								
+								Statement st2=con.createStatement();
+								ResultSet rs2=st2.executeQuery(olditem);
+								
+								if(rs2.next()==true)
+								{
+									System.out.println("old_version");
+									ja.put(rs2.getInt(2));
+									ja1.put(rs2.getString(3));
+									ja2.put(rs2.getString(4));
+									ja3.put(rs2.getString(5));
+									ja4.put(rs2.getString(6));
+									ja5.put(rs2.getString(7));
+									ja6.put(rs2.getString(8));
+									ja7.put(rs2.getString(9));
+									ja8.put(rs2.getString(10));
+									ja9.put(rs2.getString(11));
+									ja10.put(rs2.getString(12));
+								}
+								
 							}
+								
+								//jamain.put(jo);
+								//objmain.put("check", "success");
+								//objmain.put("item", jamain);
+								jo.put("check", "success");
 							
+
+						if(flag==0)
+						{
+							//jamain.put(jo);
+							//objmain.put("check", "fail");
+							//objmain.put("item", jamain);
+							jo.put("check", "fail");
+							return jo.toString();
+
+						}
+						
+						
 			
 			}
 			catch(JSONException e)
 			{
 				logger.error("In Item Detail Service: error  : "+e+ "  at the time of fetching active item");
+				System.out.println(e);
 			}
 			catch(SQLException e)
 			{
 				logger.error("In Item Detail Service: error  : "+e+ "  at the time of fetching active item");
+				System.out.println(e);
 			}
 			catch(Exception e)
 			{
 				
 				logger.error("In Item Detail Service: error  : "+e+ " at the time of fetching active item");
+				System.out.println(e);
 			}
 			finally
 			{
@@ -2004,8 +2090,11 @@ public class Implementation{
 				catch(Exception e)
 				{
 					logger.error("In Item Detail Service: error  : "+e+ "  at the time of fetching active item");
+					System.out.println(e);
 				}
 			}
+			
+			
 			
 			return  jo.toString();
 		}
@@ -2013,7 +2102,7 @@ public class Implementation{
 		
 /*13.----------ok--------------Login DETAIL BY USER NAME------------------------------------------------------------------*/		
 
-		public String getLoginDetail(String name)
+		public String getLoginDetail(String username)
 		{
 			
 			
@@ -2022,30 +2111,23 @@ public class Implementation{
 			
 			
 			
+			
 			JSONObject jo=new JSONObject();
 			
-			String uname="'"+name+"'";
 			
-			try
-			{
+			String name="'"+username+"'";
 			
 			
-			//JSONArray ja=new JSONArray();
-			}
-			catch(Exception e)
-			{
-				logger.error("In Login Detail Service: error: "+e);
-			}
 			
-			String log="select *from logincontrol where username="+uname;
+			String log="select *from logincontrol";
 			
 			Statement st=null;
 			ResultSet rs=null;					/*fetching detail from login control*/
-			try
+		try
 			{
 				
 				 
-				
+			
 				JSONArray ja=new JSONArray();
 				JSONArray ja1=new JSONArray();
 				JSONArray ja2=new JSONArray();
@@ -2063,41 +2145,64 @@ public class Implementation{
 				jo.put("parentid", ja6);
 				
 				
+				
+				
+				JSONObject obj=new JSONObject(username);
+			    JSONArray objja=obj.getJSONArray("username");
+			    
+			    for(int i=0; i<objja.length(); i++)
+			    {
+			    	System.out.println(objja.getString(i));
+			    
+			    
+				
+				
 					
 					
 					 st=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 					 rs=st.executeQuery(log); 
 					
-					if(rs.next()==false)
-					{
-						ja.put("null");
-						ja1.put("null");
-						ja2.put("null");
-						ja3.put("null");
-						ja4.put("null");
-						ja5.put("null");
-						ja6.put("null");
+					 int temp=0;
+					 while(rs.next())
+					 {
 						
-						return jo.toString();
-						
-					}
-					else
-						{
+						 temp=0;
+						 if(rs.getString(1).equals(objja.getString(i)))
+						 
+						 {
 							
-							
-							ja.put(rs.getString(1));
-							ja1.put(rs.getString(2));
-							ja2.put(rs.getString(3));
-							ja3.put(rs.getString(4));
-							ja4.put(rs.getString(5));
-							ja5.put(rs.getString(6));
-							ja6.put(rs.getString(7));
+								 ja.put(rs.getString(1));
+								 ja1.put(rs.getString(2));
+								 ja2.put(rs.getString(3));
+								 ja3.put(rs.getString(4));
+								 ja4.put(rs.getString(5));
+								 ja5.put(rs.getString(6));
+								 ja6.put(rs.getString(7));
 						   
-							
+							temp=1;
+							break;
 						
-						}
+							 
+						 }
+						 
+						 
+					 }
+					 
+					 if(temp==0)
+					 {
+						 ja.put("null");
+						 ja1.put("null");
+						 ja2.put("null");
+						 ja3.put("null");
+						 ja4.put("null");
+						 ja5.put("null");
+						 ja6.put("null");
+						 
+					 }
+					 
+					 
 				
-				
+				}
 			}
 			catch(JSONException e)
 			{
@@ -2131,127 +2236,340 @@ public class Implementation{
 		
 		
 /*14.------ok------------------DETAILS OF REPORT by Date-----------------------------------------------------------------*/		
-		public String getReportHDR(String date1,String date2)
+		public String getReportHDR(String parent,String date1,String date2)
 		{
 			
 			DatabaseConnection db=new DatabaseConnection();
 			Connection con=db.getConnection();
 			
-			String dat1="'"+date1+"'";
-			String dat2="'"+date2+"'";
+			DateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+			java.util.Date dat1=null;
+			java.util.Date dat2=null;
 			
+			int checkfilegeneration=0,sendstatus=0;
 			
+			String tomail=null;
 			
 			JSONObject jo=new JSONObject();
 			
-			
-			Statement st=null;
-			ResultSet rs=null;
-				try
+				try 
 				{
-					JSONArray ja=new JSONArray();
-					JSONArray ja1=new JSONArray();
-					JSONArray ja2=new JSONArray();
-					JSONArray ja3=new JSONArray();
-					JSONArray ja4=new JSONArray();
-					JSONArray ja5=new JSONArray();
-					JSONArray ja6=new JSONArray();
-					JSONArray ja7=new JSONArray();
-					JSONArray ja8=new JSONArray();
-					JSONArray ja9=new JSONArray();
-					JSONArray ja10=new JSONArray();
-					JSONArray ja11=new JSONArray();
-					JSONArray ja12=new JSONArray();
-					JSONArray ja13=new JSONArray();
-					JSONArray ja14=new JSONArray();
-					JSONArray ja15=new JSONArray();
-					JSONArray ja16=new JSONArray();
-			
-					jo.put("userid", ja);
-					jo.put("invoice_id", ja1);
-					jo.put("invoice_dt", ja2);
-					//
-					jo.put("customer_name", ja3);
-					jo.put("customer_gst", ja4);
-					jo.put("customer_mob", ja5);
-					jo.put("paid_flag", ja6);
-					jo.put("total_disc_amt", ja7);
-					jo.put("paid_via", ja8);
-					jo.put("payment_Ref", ja9);
-					jo.put("total_inv_amt", ja10);
-					jo.put("cgst_amt", ja11);
-					jo.put("sgst_amt", ja12);
-					jo.put("igst_amt" , ja13);
-					jo.put("customer_email", ja14);
-					jo.put("total_gst", ja15);
-					jo.put("parent_id", ja16);
-			
-			
-					/*fetching data from invoice_hdr*/
-					
-					String hdr="select *from invoice_hdr where  invoice_dt between "+dat1+" and "+dat2;
-					st=con.createStatement();
-					rs=st.executeQuery(hdr);
-			
-			
-					while(rs.next())
-					{
+					dat1 =  formatter.parse(date1);
+					dat2 = formatter.parse(date2);
+				} 
+				catch (ParseException e)
+				{
+					logger.error("In Details of report Service: error: "+e);
+				//e.printStackTrace();
+				}
 				
-				
-						ja.put(rs.getString(2));
-						ja1.put(rs.getString(3));
-						ja2.put(rs.getString(4));
-						ja3.put(rs.getString(5));
-						ja4.put(rs.getString(6));
-						ja5.put(rs.getString(7));
-						ja6.put(rs.getString(8));
-						ja7.put(rs.getString(9));
-						ja8.put(rs.getString(10));
-						ja9.put(rs.getString(11));
-						ja10.put(rs.getString(12));
-						ja11.put(rs.getString(13));
-						ja12.put(rs.getDouble(14));
-						ja13.put(rs.getDouble(15));
-						ja14.put(rs.getDouble(16));
-						ja15.put(rs.getString(17));
-						ja16.put(rs.getString(18));
-						//ja14.put(rs.getString(19));
-					
-					}
 			
 			
+				int isdate=0;
 			
-				}
-				catch(JSONException e)
-				{
-					logger.error("In Detail of Report Service by Date: error  : "+e+ " in Json object ");
-				}
-				catch(SQLException e)
-				{
-					logger.error("In Detail of Report Service by Date: error  : "+e+ "  at the time of fetching detail from invoice_hdr within date");
-				}
-				catch(Exception e)
-				{
-					logger.error("In Detail of Report Service by Date: error  : "+e+ " at the time of fetching detail from invoice_hdr within date");
-				}
-				finally
-				{
+			
+				String invoicehdr="select  userid,invoice_dt,customer_email from invoice_hdr";
+			
+					Statement st=null;
+					ResultSet rs=null;
 					try
 					{
-						st.close();
-						rs.close();
-						con.close();
+						st = con.createStatement();
+						rs = st.executeQuery(invoicehdr);
 					}
-					catch(Exception e)
+					catch (SQLException e) 
 					{
-						logger.error("In Detail of Report Service by Date: error  : "+e+ " in closing  statement or resultset or connection at the time of fetching detail from invoice_hdr within date");
-						
+						logger.error("In Details of report Service: error: "+e);
+						//e.printStackTrace();
 					}
 					
-				}
-		
-			
-				return jo.toString();
+					System.out.println(invoicehdr);
+				
+					//int less=dat1.compareTo(rs.getDate(2));
+					//int greater=dat1.compareTo(rs.getDate(2));
+					//int equa=dat1.compareTo(rs.getDate(2));
+		 			
+					
+					try {
+							if(rs.next()==false)
+							{
+								try
+								{
+									jo.put("check", "notexist");
+								} 
+								catch (JSONException e)
+								{
+					
+									logger.error("In Details of report Service: error: "+e);
+									//e.printStackTrace();
+								}
+								return jo.toString();
+						}
+						//rs.previous();
+							int count=0;
+						while(rs.next())
+						{
+							
+							
+							if(rs.getString(1).equals(parent) &&( (dat2.compareTo(rs.getDate(2)))>0 && (dat1.compareTo(rs.getDate(2)))<0 ||(date1.equals(rs.getString(2)) || date2.equals(rs.getString(2)))))
+							{
+								tomail=rs.getString(3);
+								System.out.println(rs.getInt(1));
+								isdate=1;
+								count++;
+								break;
+							}
+							
+						}
+						System.out.println(count);
+					} catch (SQLException e) {
+						logger.error("In Details of report Service: error: "+e);
+						//e.printStackTrace();
+					}
+				
+					
+				
+					
+					if(isdate==0)        /* if date not exist */
+						{
+							try
+								{
+								jo.put("check", "notexist");
+								} 
+								catch (JSONException e)
+							{
+						
+									logger.error("In Details of report Service: error: "+e);
+									//e.printStackTrace();
+							}
+							return jo.toString();
+						}
+					else     /* if date exist then generate excel file */
+					{
+						
+						
+						try
+						{
+						Statement statement = con.createStatement();
+						
+							System.out.println(parent);
+								FileOutputStream fileOut;
+								fileOut = new FileOutputStream("C:\\Excel_File\\reportof"+parent+".xls");
+								
+								HSSFWorkbook workbook = new HSSFWorkbook();
+								HSSFSheet worksheet = workbook.createSheet("Sheet 0");
+				        
+								Row row1 = worksheet.createRow((short)0);
+								row1.createCell(0).setCellValue("userId");
+								row1.createCell(1).setCellValue("invoiceId");
+								row1.createCell(2).setCellValue("invoiceDate");
+								row1.createCell(3).setCellValue("customerName");
+								row1.createCell(4).setCellValue("customerGst");
+								row1.createCell(5).setCellValue("customerMobile");
+								row1.createCell(6).setCellValue("paidFlag");
+								row1.createCell(7).setCellValue("totalDis_Amount");
+								row1.createCell(8).setCellValue("paidVia");
+								row1.createCell(9).setCellValue("paymentRef");
+								row1.createCell(10).setCellValue("total_Inv_Amt");
+								row1.createCell(11).setCellValue("cgst_amt");
+								row1.createCell(12).setCellValue("sgst_amt");
+								row1.createCell(13).setCellValue("igst_amt");
+								row1.createCell(14).setCellValue("customer_email");
+								row1.createCell(15).setCellValue("total_gst");
+								row1.createCell(16).setCellValue("parent_id");
+								
+								Row row2 ;
+				        
+								ResultSet rs3 = statement.executeQuery("SELECT  *FROM invoice_hdr");
+								//int count=0;
+								int a=1;
+								while(rs3.next())
+								{
+									if(rs3.getString(2).equals(parent) &&( (dat2.compareTo(rs3.getDate(4)))>0 && (dat1.compareTo(rs3.getDate(4)))<0 ||(date1.equals(rs3.getString(4)) || date2.equals(rs3.getString(4)))))
+									{	
+										//count++;
+										 //System.out.println(parent);
+										//int a = rs3.getRow();
+										checkfilegeneration=1;
+										row2 = worksheet.createRow((short)a);
+										row2.createCell(0).setCellValue(rs3.getString(2));
+										row2.createCell(1).setCellValue(rs3.getString(3));
+										row2.createCell(2).setCellValue(rs3.getString(4));
+										row2.createCell(3).setCellValue(rs3.getString(5));
+										row2.createCell(4).setCellValue(rs3.getString(6));
+										row2.createCell(5).setCellValue(rs3.getString(7));
+										row2.createCell(6).setCellValue(rs3.getString(8));
+										row2.createCell(7).setCellValue(rs3.getString(9));
+										row2.createCell(8).setCellValue(rs3.getString(10));
+										row2.createCell(9).setCellValue(rs3.getString(11));
+										row2.createCell(10).setCellValue(rs3.getString(12));
+										row2.createCell(11).setCellValue(rs3.getString(13));
+										row2.createCell(12).setCellValue(rs3.getString(14));
+										row2.createCell(13).setCellValue(rs3.getString(15));
+										row2.createCell(14).setCellValue(rs3.getString(16));
+										row2.createCell(15).setCellValue(rs3.getString(17));
+										row2.createCell(16).setCellValue(rs3.getString(18));
+										
+										++a;
+									}
+								}
+				      // System.out.println(count);
+								workbook.write(fileOut);
+								fileOut.flush();
+								fileOut.close();
+								rs3.close();
+								statement.close();
+								//con.close();
+								//System.out.println("Export Success");
+							}
+							catch(SQLException ex)
+							{
+								checkfilegeneration=2;
+								//System.out.println(ex);
+								logger.error("In Details of report Service: error: "+ex);
+							}
+							catch(IOException ioe)
+							{
+								checkfilegeneration=2;
+								//System.out.println(ioe);
+								logger.error("In Details of report Service: error: "+ioe);
+							}
+					
+						}	
+						
+					
+					
+					if(checkfilegeneration==1) /* sending mail if file generated */
+					{
+						 final String username = "support@iratechnologies.com";
+							final String password = "India@123";
+							String tosend=tomail;
+							// setting gmail smtp properties
+							Properties props = new Properties();
+							props.put("mail.smtp.auth", "true");
+							props.put("mail.smtp.starttls.enable", "true");
+							props.put("mail.smtp.host", "smtp.gmail.com");
+							props.put("mail.smtp.port", "587");
+
+							// check the authentication
+							Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+								protected PasswordAuthentication getPasswordAuthentication() {
+									return new PasswordAuthentication(username, password);
+								}
+							});
+
+							try {
+
+								Message message = new MimeMessage(session);
+								message.setFrom(new InternetAddress("support@iratechnologies.com"));
+
+								// recipients email address
+								message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(tosend));
+
+								// add the Subject of email
+								message.setSubject("Support Ira Technologies");
+
+								Multipart multipart = new MimeMultipart();
+
+								// add the body message
+								BodyPart bodyPart = new MimeBodyPart();
+								bodyPart.setText("This is the Invoice Requested Report for a Period. Thank You");
+								multipart.addBodyPart(bodyPart);
+
+								// attach the file
+								MimeBodyPart mimeBodyPart = new MimeBodyPart();
+								try
+								{
+								mimeBodyPart.attachFile(new File("C:\\Excel_File\\reportof"+parent+".xls"));
+								}
+								catch(Exception e)
+								{
+									sendstatus=1;
+									//System.out.println(e);
+									logger.error("In Details of report Service: error: "+e);
+								}
+								multipart.addBodyPart(mimeBodyPart);
+
+								message.setContent(multipart);
+
+								Transport.send(message);
+
+								//System.out.println("Email Sent Successfully");
+
+							} catch (MessagingException e)
+							{
+								sendstatus=1;
+								//e.printStackTrace();
+								logger.error("In Details of report Service: error: "+e);
+
+							}
+					
+						
+					}
+					else
+					{
+						try {
+							jo.put("check", "fail");
+							return jo.toString();
+						} 
+						catch (JSONException e)
+						{
+							logger.error("In Details of report Service: error: "+e);
+							//e.printStackTrace();
+						}
+					}
+					
+					
+					
+					if(sendstatus==1)
+					{
+
+						try {
+							jo.put("check", "fail");
+							return jo.toString();
+						} 
+						catch (JSONException e)
+						{
+							logger.error("In Details of report Service: error: "+e);
+							//e.printStackTrace();
+						}
+					}
+					
+					
+					/* deleting file which is created */
+					try
+			        {
+			            Files.deleteIfExists(Paths.get("C:\\Excel_File\\reportof"+parent+".xls"));
+			        }
+			        catch(NoSuchFileException e)
+			        {
+			            //System.out.println("No such file/directory exists");
+			            logger.error("In Details of report Service: error: "+e);
+			        }
+			        catch(DirectoryNotEmptyException e)
+			        {
+			            //System.out.println("Directory is not empty.");
+			            logger.error("In Details of report Service: error: "+e);
+			        }
+			        catch(IOException e)
+			        {
+			            //System.out.println("Invalid permissions.");
+			            logger.error("In Details of report Service: error: "+e);
+			        }
+					
+					
+					
+					/* after send successfully mail */
+				
+					try {
+						jo.put("check", "success");
+						} 
+					catch (JSONException e)
+					{
+						logger.error("In Details of report Service: error: "+e);
+						//e.printStackTrace();
+					}
+					return jo.toString();
 			
 		}
 
@@ -2262,10 +2580,21 @@ public class Implementation{
 		{
 			DatabaseConnection db=new DatabaseConnection();
 			Connection con=db.getConnection();
+			String inid="'"+invoiceid+"'";
+	        // String ch="idnotexist";
+			JSONObject jomain=new JSONObject();
 			
+			JSONArray jamain=new JSONArray();
 	         
-			
 			JSONObject jo=new JSONObject();
+			try
+			{
+				//jomain.put("check", "idnotexist");
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+			}
 			
 			Statement st=null;
 			ResultSet rs=null;
@@ -2290,54 +2619,150 @@ public class Implementation{
 			JSONArray ja15=new JSONArray();
 			JSONArray ja16=new JSONArray();
 			
-			jo.put("userid", ja);
-			jo.put("invoice_id", ja1);
-			jo.put("invoice_dt", ja2);
-			//
-			jo.put("customer_name", ja3);
-			jo.put("customer_gst", ja4);
-			jo.put("customer_mob", ja5);
-			jo.put("paid_flag", ja6);
-			jo.put("total_disc_amt", ja7);
-			jo.put("paid_via", ja8);
-			jo.put("payment_Ref", ja9);
-			jo.put("total_inv_amt", ja10);
-			jo.put("cgst_amt", ja11);
-			jo.put("sgst_amt", ja12);
-			jo.put("igst_amt" , ja13);
-			jo.put("customer_email", ja14);
-			jo.put("total_gst", ja15);
-			jo.put("parent_id", ja16);
+			
+			jo.put("username", ja);										
+			jo.put("invoiceId", ja1);
+			jo.put("invoiceDate", ja2);
+			
+			jo.put("customerName", ja3);
+			jo.put("customerGst", ja4);
+			jo.put("customerMobile", ja5);
+			jo.put("paidFlag", ja6);
+			jo.put("totalDiscount", ja7);
+			jo.put("paidVia", ja8);
+			jo.put("paymentRef", ja9);
+			jo.put("totalInvoiceAmount", ja10);
+			jo.put("cGstAmount", ja11);
+			jo.put("sGstAmount", ja12);
+			jo.put("iGstAmount" , ja13);
+			jo.put("customerEmail", ja14);
+			jo.put("gstAmount", ja15);
+			jo.put("parentUser", ja16);
+			
+			
+			JSONArray j=new JSONArray();     /*  for invoice_line   */
+			JSONArray j1=new JSONArray();
+			JSONArray j2=new JSONArray();
+			JSONArray j3=new JSONArray();
+			JSONArray j4=new JSONArray();
+			JSONArray j5=new JSONArray();
+			JSONArray j6=new JSONArray();
+			JSONArray j7=new JSONArray();
+			JSONArray j8=new JSONArray();
+			JSONArray j9=new JSONArray();
+			JSONArray j10=new JSONArray();
+			JSONArray j11=new JSONArray();
+			JSONArray j12=new JSONArray();
+			JSONArray j13=new JSONArray();
+			JSONArray j14=new JSONArray();
+			JSONArray j15=new JSONArray();
+			
+			JSONObject o=new JSONObject();
+			JSONArray jaline=new JSONArray();
+			o.put("username", j);
+			o.put("invoiceId", j1);
+			o.put("invoiceDate", j2);
+			o.put("itemSequence", j3);
+			o.put("itemId", j4);
+			o.put("itemQuantity", j5);
+			o.put("itemRate", j6);
+			o.put("itemDiscount", j7);
+			o.put("itemCgst", j8);
+			o.put("itemSgst", j9);
+			o.put("itemIgst", j10);
+			o.put("itemVersion", j11);
+			o.put("parentUser", j12);
+			o.put("itemGst", j13);
+			o.put("itemName", j14);
+			o.put("netAmount", j15);
+			
+			
+			
 			
 			
 					/*fetching invoice_hdr detail by invoice id*/
 			
-			String hdr="select *from invoice_hdr where  invoice_id="+invoiceid;
+			String hdr="select *from invoice_hdr where  invoice_id="+inid;
 			 st=con.createStatement();
 			 rs=st.executeQuery(hdr);
 			
-			
+			if(rs.next()==false)
+			{
+				jamain.put(jo);
+		        jomain.put("invoice_hdr", jamain);
+				
+			}
+			rs.previous();
 			 while(rs.next())
 			 	{
 				 	ja.put(rs.getString(2));
-				 	ja1.put(rs.getInt(3));
+				 	ja1.put(rs.getString(3));
 				 	ja2.put(rs.getString(4));
 				 	ja3.put(rs.getString(5));
 				 	ja4.put(rs.getString(6));
 				 	ja5.put(rs.getString(7));
 				 	ja6.put(rs.getString(8));
 				 	ja7.put(rs.getString(9));
-				 	ja8.put(rs.getDouble(10));
+				 	ja8.put(rs.getString(10));
 				 	ja9.put(rs.getString(11));
 				 	ja10.put(rs.getString(12));
-				 	ja11.put(rs.getDouble(13));
-					ja12.put(rs.getDouble(14));
-					ja13.put(rs.getDouble(15));
-					ja14.put(rs.getDouble(16));
-					ja15.put(rs.getDouble(17));
-					ja16.put(rs.getDouble(18));
-				
+				 	ja11.put(rs.getString(13));
+					ja12.put(rs.getString(14));
+					ja13.put(rs.getString(15));
+					ja14.put(rs.getString(16));
+					ja15.put(rs.getString(17));
+					ja16.put(rs.getString(18));
+					
+					//ch="idexist";
+					jamain.put(jo);
+				    jomain.put("invoice_hdr", jamain);
 			 	}
+			 
+			 
+			   /* fetching data from invoice_line table */
+			
+			 String line="select *from invoice_line where  invoice_id="+inid;
+			 Statement st1=con.createStatement();
+			 ResultSet rs1=st1.executeQuery(line);
+			 
+			 if(rs1.next()==false)
+			 {
+				    jaline.put(o);
+				   	jomain.put("invoice_line", jaline);
+				   	jomain.put("check", "fail");
+			 }
+			 
+			 rs1.previous();
+			 while(rs1.next())
+			 {
+				 
+				    j.put(rs1.getString(2));
+				 	j1.put(rs1.getString(3));
+				 	j2.put(rs1.getString(4));
+				 	j3.put(rs1.getString(5));
+				 	j4.put(rs1.getString(6));
+				 	j5.put(rs1.getString(7));
+				 	j6.put(rs1.getString(8));
+				 	j7.put(rs1.getString(9));
+				 	j8.put(rs1.getString(10));
+				 	j9.put(rs1.getString(11));
+				 	j10.put(rs1.getString(12));
+				 	j11.put(rs1.getString(13));
+					j12.put(rs1.getString(14));
+					j13.put(rs1.getString(15));
+					j14.put(rs1.getString(16));
+					j15.put(rs1.getString(17));
+					
+				   	jaline.put(o);
+				   	jomain.put("invoice_line", jaline);
+				   	jomain.put("check", "success");
+				 
+			 }
+			 
+			 
+			 
+			 
+			 
 			 
 			}
 			catch(JSONException e)
@@ -2366,7 +2791,7 @@ public class Implementation{
 				}
 			}
 			
-			return jo.toString();
+			return jomain.toString();
 			
 		}
 		
@@ -2463,7 +2888,7 @@ public class Implementation{
 				DatabaseConnection db=new DatabaseConnection();
 				Connection con=db.getConnection();
 				
-				int flag=0, inserthdr=0, insertline=0;
+				int flag=0, inserthdr=0, insertline=0,fail=0;
 				//System.out.println(item);
 				JSONObject jo=new JSONObject();
 				try
@@ -2475,7 +2900,7 @@ public class Implementation{
 				}
 				
 				String maxidhdr="select max(id) from invoice_hdr";    /*fetching max id from both table*/
-				//String maxidline="select max(id) from invoice_line";
+				String maxidline="select max(id) from invoice_line";
 				
 				Statement st=null;
 				Statement st1=null;
@@ -2506,37 +2931,37 @@ public class Implementation{
 						}
 						
 						
-						//st1=con.createStatement();
-						//rs1=st1.executeQuery(maxidline);
+						st1=con.createStatement();
+						rs1=st1.executeQuery(maxidline);
 						
-						//if(rs1.next()==false)
-						//{
-						//	insertline=1;
+						if(rs1.next()==false)
+						{
+							insertline=1;
 							
-					//	}
-					//	else
-					//	{
-						//	lineid=rs1.getInt(1);
+						}
+						else
+						{
+							lineid=rs1.getInt(1);
 							
-					//	}
+						}
 						
 				}
 				catch(SQLException e)
 				{
-					logger.error("In Synch Invoice Service: error  : "+e+ " in creating ststement or resultset at the time of fetching max id invoice_hdr");
+					logger.error("In Synch Invoice Service: error  : "+e+ " in creating ststement or resultset at the time of fetching max id invoice_hdr and invoice_line");
 				}
 				catch(Exception e)
 				{
-					logger.error("In Synch Invoice Service: error : "+e+ "  at the time of fetching max id from invoice_hdr");
+					logger.error("In Synch Invoice Service: error : "+e+ "  at the time of fetching max id from invoice_hdr and invoice_line");
 				}
 				finally
 				{
 					try
 					{
 					st.close();
-					//st1.close();
+					st1.close();
 					rs.close();
-					//rs1.close();
+					rs1.close();
 					}
 					catch(Exception e)
 					{
@@ -2550,39 +2975,13 @@ public class Implementation{
 				 {
 					 JSONObject objmain=new JSONObject(item);
 					 JSONArray  arrmain=objmain.getJSONArray("invoice");
-					 JSONObject objhdr=arrmain.getJSONObject(0);
 					 
-					 //String name=objhdr.getString("username");
-					 //JSONArray ja=new JSONArray(objhdr.getString("username"));
+					 JSONObject objhdr=arrmain.getJSONObject(0);//  getJSONObject(arrmain.length()-1);
+					 JSONObject objline=arrmain.getJSONObject(1);
+					
 					 
-					 //for(int i=0; i<ja.length(); i++)
-						 //System.out.println(ja.getString(i));
-					 
-					//System.out.println(ja);
-					 
-					 JSONArray arr=new JSONArray(objhdr.getString("username"));
-					 JSONArray arr1=new JSONArray(objhdr.getString("invoiceId"));
-					 JSONArray arr2=new JSONArray(objhdr.getString("invoiceDate"));
-					 JSONArray arr3=new JSONArray(objhdr.getString("customerName"));
-					 JSONArray arr4=new JSONArray(objhdr.getString("customerGst"));
-					 JSONArray arr5=new JSONArray(objhdr.getString("customerMobile"));
-					 JSONArray arr6=new JSONArray(objhdr.getString("paidFlag"));
-					 JSONArray arr7=new JSONArray(objhdr.getString("totalDiscount"));
-					 JSONArray arr8=new JSONArray(objhdr.getString("paidVia"));
-					 JSONArray arr9=new JSONArray(objhdr.getString("paymentRef"));
-					 JSONArray arr10=new JSONArray(objhdr.getString("totalInvoiceAmount"));
-					 JSONArray arr11=new JSONArray(objhdr.getString("cGstAmount"));
-					 
-					 JSONArray arr12=new JSONArray(objhdr.getString("sGstAmount"));
-					 JSONArray arr13=new JSONArray(objhdr.getString("iGstAmount"));
-					 JSONArray arr14=new JSONArray(objhdr.getString("customerEmail"));
-					 JSONArray arr15=new JSONArray(objhdr.getString("gstAmount"));
-					 JSONArray arr16=new JSONArray(objhdr.getString("parentUser"));
-					 
-					 for(int i=0; i<arr.length(); i++)
-					 System.out.println(arr.getInt(i));
-					 
-					/*{
+					
+					 							/* Parsing for invoice_hdr table */
 					 JSONArray arr =   objhdr.getJSONArray("username"); 
 					 JSONArray arr1 =  objhdr.getJSONArray("invoiceId");
 					 JSONArray arr2 =  objhdr.getJSONArray("invoiceDate");
@@ -2601,29 +3000,35 @@ public class Implementation{
 					 JSONArray arr15=  objhdr.getJSONArray("gstAmount");
 					 JSONArray arr16 = objhdr.getJSONArray("parentUser");
 					 
-					 //JSONArray arr17 = obj.getJSONArray("invoice_item_seq");
-					// JSONArray arr18 = obj.getJSONArray("item_id");
-					// JSONArray arr19 = obj.getJSONArray("item_qty");
-					// JSONArray arr20 = obj.getJSONArray("item_rate");
-					 //JSONArray arr18=obj.getJSONArray("customer_email");
-					 //JSONArray arr19=obj.getJSONArray("total_gst");
-					 //JSONArray arr20 = obj.getJSONArray("parent_id");
-					// JSONArray arr21 = obj.getJSONArray("item_version");
-					// JSONArray arr22 = obj.getJSONArray("item_gst");
-					 //JSONArray arr23=obj.getJSONArray("item_name");
-					// JSONArray arr24 = obj.getJSONArray("item_net_amount");
+					 							/* parsing for invoice_line table */
+					 JSONArray ar=objline.getJSONArray("username");
+					 JSONArray ar1=objline.getJSONArray("invoiceId");
+					 JSONArray ar2=objline.getJSONArray("invoiceDate");
+					 JSONArray ar3=objline.getJSONArray("itemSequence");
+					 JSONArray ar4=objline.getJSONArray("itemId");
+					 JSONArray ar5=objline.getJSONArray("itemQuantity");
+					 JSONArray ar6=objline.getJSONArray("itemRate");
+					 JSONArray ar7=objline.getJSONArray("itemDiscount");
+					 JSONArray ar8=objline.getJSONArray("itemCgst");
+					 JSONArray ar9=objline.getJSONArray("itemSgst");
+					 JSONArray ar10=objline.getJSONArray("itemIgst");
+					 JSONArray ar11=objline.getJSONArray("itemVersion");
+					 JSONArray ar12=objline.getJSONArray("parentUser");
+					 JSONArray ar13=objline.getJSONArray("itemGst");
+					 JSONArray ar14=objline.getJSONArray("itemName");
+					 JSONArray ar15=objline.getJSONArray("netAmount");
+					 
+					 
+					 
 					
-					}*/
+					 //System.out.println("length of username arr"+arr.length());
 					 
 					 String hdr="insert into invoice_hdr(userid,invoice_id, invoice_dt,customer_name,"
 					 		+ "customer_gst, customer_mob,paid_flag,total_disc_amt, paid_via, payment_Ref, "
 					 		+ "total_inv_amt, cgst_amt,sgst_amt,igst_amt,customer_email,total_gst,parent_id ) "
 					 		+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 					 
-					 for(int i=0; i<arr.length() && i<arr1.length() && i<arr2.length() && i<arr3.length() && i<arr4.length() && 
-							 i<arr5.length() && i<arr6.length() && i<arr7.length() && i<arr8.length() && 
-							 i<arr9.length() && i<arr10.length() && i<arr11.length() && i<arr12.length() && 
-							 i<arr13.length() && i<arr14.length() && i<arr15.length()&& i<arr16.length(); i++)
+					 for(int i=0; i<arr.length(); i++)
 					 {
 						
 						 
@@ -2635,7 +3040,7 @@ public class Implementation{
 							int insert=0;
 							while(rs1.next())
 							{
-								if(rs1.getString(1).equals(arr2.getString(i)))
+								if(rs1.getString(1).equals(arr1.getString(i)))
 								{
 									insert=1;
 								}
@@ -2651,7 +3056,7 @@ public class Implementation{
 								ps.setString(1, arr.getString(i));
 								ps.setString(2,arr1.getString(i));
 								ps.setString(3, arr2.getString(i));
-								ps.setString(4, arr3.getString(i));
+		 						ps.setString(4, arr3.getString(i));
 								ps.setString(5, arr4.getString(i));
 								ps.setString(6, arr5.getString(i));
 								ps.setString(7, arr6.getString(i));
@@ -2660,9 +3065,9 @@ public class Implementation{
 								ps.setString(10, arr9.getString(i));
 								ps.setString(11, arr10.getString(i));
 								ps.setString(12, arr11.getString(i));
-								ps.setDouble(13, arr12.getDouble(i));
-								ps.setDouble(14, arr13.getDouble(i));
-								ps.setDouble(15, arr14.getDouble(i));
+								ps.setDouble(13, Double.parseDouble(arr12.getString(i)));
+								ps.setDouble(14, Double.parseDouble(arr13.getString(i)));
+								ps.setString(15, arr14.getString(i));
 								ps.setString(16, arr15.getString(i));
 								ps.setString(17, arr16.getString(i));
 						
@@ -2675,69 +3080,84 @@ public class Implementation{
 					 
 					 
 					
-					/* { 
+					 
 					 String line="insert into invoice_line(userid,invoice_id, invoice_dt,invoice_item_seq,"
 					 		+ " item_id,item_qty,item_rate,total_dis_amt,cgst_amt, sgst_amt, igst_amt,"
 					 		+ "item_version,parent_id,item_gst,item_name,item_net_amount)"
 					 		+ " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 					 
-					 
-					 for(int i=0; i<arr.length() && i<arr1.length() && i<arr2.length() &&
-							 i<arr17.length() && i<arr18.length() && i<arr19.length() && i<arr20.length() &&
-							 i<arr7.length() && i<arr11.length() && i<arr12.length() && i<arr13.length() &&
-							 i<arr21.length() && i<arr16.length() && i<arr22.length() && i<arr23.length() && 
-							 i<arr24.length(); i++)
+					 Statement st2=null;
+					 ResultSet rs2=null;
+					 for(int i=0; i<ar.length() ; i++)
 					 {
 						 
 						 
+						 String li="select invoice_id from invoice_line";
+						 
+						    st2=con.createStatement();
+							rs2=st2.executeQuery(li);
+							
+							int insert1=0;
+							while(rs2.next())
+							{
+								if(rs2.getString(1).equals(ar1.getString(i)))
+								{
+									insert1=1;
+								}
+							}
+						 
+						 
+						 if(insert1==0)
+						 {
+							
 						 PreparedStatement ps1 = con.prepareStatement(line);
 						 
-						 ps1.setString(1, arr.getString(i));
-						 ps1.setString(2, arr1.getString(i));
-						 ps1.setString(3, arr2.getString(i));
-						 ps1.setString(4, arr17.getString(i));
-						 ps1.setString(5, arr18.getString(i));
-						 ps1.setString(6, arr19.getString(i));
-						 ps1.setString(7, arr20.getString(i));
-						 ps1.setString(8, arr7.getString(i));
-						 ps1.setString(9, arr11.getString(i));
-						 ps1.setString(10, arr12.getString(i));
-						 ps1.setString(11, arr13.getString(i));
-						 //ps1.setString(12, arr14.getString(i));
-						 ps1.setString(12, arr21.getString(i));
-						 ps1.setString(13, arr16.getString(i));
-						 //ps1.setString(15, arr22.getString(i));
-						 ps1.setString(14,arr22.getString(i));
-						 ps1.setString(15,arr23.getString(i));
-						 ps1.setString(16,arr24.getString(i));
+						 ps1.setString(1, ar.getString(i));
+						 ps1.setString(2, ar1.getString(i));
+						 ps1.setString(3, ar2.getString(i));
+						 ps1.setString(4, ar3.getString(i));
+						 ps1.setString(5, ar4.getString(i));
+						 ps1.setString(6, ar5.getString(i));
+						 ps1.setString(7, ar6.getString(i));
+						 ps1.setString(8, ar7.getString(i));
+						 ps1.setString(9, ar8.getString(i));
+						 ps1.setString(10, ar9.getString(i));
+						 ps1.setString(11, ar10.getString(i));
+						 ps1.setString(12, ar11.getString(i));
+						 ps1.setString(13, ar12.getString(i));
+						 ps1.setString(14,ar13.getString(i));
+						 ps1.setString(15,ar14.getString(i));
+						 ps1.setString(16,ar15.getString(i));
 						 
 						 ps1.executeUpdate();
+						 }
 						 
 					 }
-					 }*/
+					 
 					 
 				 }
 				 catch(JSONException e)
 				 {
-					 flag=1;
+					 fail=1;
 					 logger.error("In Synch Invoice Service: error  : "+e+ " in json object");
+					 System.out.println(e);
 				 }
 				 catch(SQLException e)
 				 {
-					 flag=1;
+					 fail=1;
 					 logger.error("In Synch Invoice Service: error : "+e+ "  in preparestatement at the time of synch invoice");
 				 }
 				 catch(Exception e)
 				 {
 					 
-					 flag=1;
+					 fail=1;
 					 logger.error("In Synch Invoice Service: error  : "+e+ " at the time of synch invoice");
 				 }
 				 
 				 
 				
 				 
-				 if(flag==1)     /*deleting data if failed*/
+				 if(fail==1)     /*deleting data if failed*/
 				 {
 					 
 					 String delhdr="delete from invoice_hdr where id>"+hdrid;
@@ -2760,7 +3180,7 @@ public class Implementation{
 					 
 					 
 					 
-					/*{ 
+					 
 					 String delline="delete from invoice_line where id>"+lineid;
 					 
 					 try
@@ -2778,32 +3198,23 @@ public class Implementation{
 						 logger.error("In Synch Invoice Service: error  : "+e+ "  at the time of deleting data if failed");
 					 }
 					 
-					 {
-						 try
-						 {
-						 jo.put("check", "fail");
-						 return jo.toString();
-						 }
-						 catch(Exception e)
-						 {
-							logger.error("In Synch Invoce Service: error: "+e); 
-						 }
-						 
-					 }}*/
-					 
+					
 				 }
-				 try
-				 {
-				 jo.put("check", "fail");           /* If insertion fail*/
-				 return jo.toString();
-				 }
-				 catch(Exception e)
-				 {
-					logger.error("In Synch Invoce Service: error: "+e); 
-				 }
-				
 				 
-				 return jo.toString();
+				 if(fail==1)
+				 {
+					 try
+					 {
+						 jo.put("check", "fail");           /* If insertion fail*/
+						 return jo.toString();
+					 }
+					 catch(Exception e)
+					 {
+						 logger.error("In Synch Invoce Service: error: "+e); 
+					 }
+				 }
+				 
+				 return jo.toString();      /*if insertion success */
 			}
 
 

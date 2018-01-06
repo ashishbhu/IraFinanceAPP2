@@ -173,20 +173,20 @@ public class ResourceServices {
 		  @GET
 		  @Path("getitem")
 		  @Produces(MediaType.APPLICATION_JSON)
-		  public String getAllItem(@QueryParam("subid") String id)
+		  public String getAllItem(@QueryParam("subid") String id,@QueryParam("date") String date)
 		  {
 			  BusinessLogic bl=new BusinessLogic();
-			  return bl.getAllItem(id);
+			  return bl.getAllItem(id,date);
 		  }	
 	
 		   
 /*13.----------ok--------------Login DETAIL BY USER NAME------------------------------------------------------------------*/
 			  
-			  @GET
+			  @POST
 			  @Path("logindetail")
-			 // @Consumes(MediaType.APPLICATION_JSON)
+			  //@Consumes(MediaType.APPLICATION_JSON)
 			  @Produces(MediaType.APPLICATION_JSON)
-			  public String loginDetails(@QueryParam("username") String username)
+			  public String loginDetails(String username)
 			  {
 				  BusinessLogic bl=new BusinessLogic();
 				  return bl.getLoginDetail(username);
@@ -199,10 +199,10 @@ public class ResourceServices {
 			  @Path("reportdetail")
 			  @Consumes(MediaType.APPLICATION_JSON)
 			  @Produces(MediaType.APPLICATION_JSON)
-			  public String reportHDR(@QueryParam("date1") String date1,@QueryParam("date2") String date2)
+			  public String reportHDR(@QueryParam("parent") String parent,@QueryParam("date1") String date1,@QueryParam("date2") String date2)
 			  {
 				  BusinessLogic bl=new BusinessLogic();
-				  return bl.getReportHDR(date1,date2);
+				  return bl.getReportHDR(parent,date1,date2);
 			  }
 
 /*15.------ok--------------DETAILS OF REPORT By INVOICE_ID----------------------------------------------------------------*/
@@ -242,7 +242,7 @@ public class ResourceServices {
 			  {
 				  BusinessLogic bl=new BusinessLogic();
 				  return bl.setInvoice_hdr(item);
-			  }	
+	 		  }	
 			  
 			  
 			  
