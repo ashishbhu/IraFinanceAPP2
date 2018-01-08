@@ -143,7 +143,7 @@ public class ResourceServices {
 	   
 /*10------------------OK-----------FOR EDIT SUB USER ACCESS----------------------------------------------------*/
 	   
-	   @PUT
+	   @POST
 	   @Path("editsubuseraccess")
 	   @Consumes(MediaType.APPLICATION_JSON)
 	   @Produces(MediaType.APPLICATION_JSON)

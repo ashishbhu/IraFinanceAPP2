@@ -365,10 +365,30 @@ private static final String Syatem = null;
 						
 								}
 							}
-							if(temp==0) /* if user not exist in registration table */
+							
+							
+							
+							/* checking for sub user */
+							String sub1="select childUserName from subuser where childUserName="+user;
+							Statement stsub=con.createStatement();
+							ResultSet rssub=stsub.executeQuery(sub1);
+							if(temp==0)
 							{
+							if(rssub.next()==false)
+								{
+									temp=2;
+								}
+								else
+									{
+										temp=2;
+									}
 								
-
+							}
+							
+						/*{if(temp==0) /* if user not exist in registration table */
+							/*{
+								
+								System.out.println("mainuser");
 								jo.put("parentuser", "null");
 								jo.put("check", "uincorrect" );
 								jo.put("accl",  "null");
@@ -378,9 +398,12 @@ private static final String Syatem = null;
 								jo.put("email","null");
 								return jo.toString(); 
 								
-							}
-				
+							}}*/
+		
+					
 					}
+				
+					
 					catch(SQLException e)
 					{
 						logger.error("In Login Service: error  : "+e+ ",  at the time of checking user exist in logincontrol or not");
@@ -428,7 +451,16 @@ private static final String Syatem = null;
 														jo.put("forcep",rs.getString(4));
 														jo.put("access", rs.getInt(5));
 														jo.put("email",mail);
-			 		  
+														
+														
+														String login="update logincontrol set forcelogin=? where username=?";
+														
+														PreparedStatement st2=con.prepareStatement(login);
+														
+														st2.setString(1, "false");
+														st2.setString(2, user);
+														st2.executeUpdate();
+														
 														//System.out.println(jo.toString());
 														return jo.toString(); /*---if user and pass exist in logincontrol----*/
 					
@@ -465,11 +497,13 @@ private static final String Syatem = null;
 						catch(SQLException e)
 							{
 								flag=3;
+								System.out.println(e);
 								logger.error("In Login service: error  : "+e+ ",  at the time of checking after user is exist");
 							}
 	 
 							catch(Exception e)
 							{
+								System.out.println(e);
 								logger.error("In Login service: error  : "+e+ ", at the time of checking after user is exist");
 								
 							}
@@ -490,28 +524,29 @@ private static final String Syatem = null;
 				else    /*-----for checking user is sub user or not-----*/
 				{
 					
-					String login="select *from logincontrol";
 					
-					//System.out.println(username);
-					String s1="'"+username+"'";
+					
+					
+					String s1=username;
 					String subu="select subid from subuser where childUserName="+s1;
 					
 					int id=0;
 					ResultSet rs3=null;
 					Statement st3=null;
 					try
-					{
+		 			{
 						st3=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 					    rs3=st3.executeQuery(subu);
-					    
+					    //System.out.println(s1);
 					    if(rs3.next()==false)
 					    {
-					    	
+					    	System.out.println("subuser");
 					    }
 					    else
 					    {
-						rs3.next();
-						id=rs3.getInt(1); 
+						//rs3.previous();
+						id=rs3.getInt(1);
+						//System.out.println(id);
 					    }
 					    /*-selecting sub user parent id----*/
 						//System.out.println(id);
@@ -519,6 +554,7 @@ private static final String Syatem = null;
 					}
 					catch(SQLException e)
 					{
+						System.out.println(e);
 						logger.error("In login service: error  : "+e+ ",  at the time selecting sub user name");
 					}
 					catch(Exception e)
@@ -538,23 +574,29 @@ private static final String Syatem = null;
 					}
 					*/
 					String submail="select  emailid from registration where subid="+id;
+					String loginc="select *from logincontrol";
 					int flag1=0;
 					String submailid=null;
-					ResultSet rs2=null;
+					//ResultSet rs2=null;
 					try       /*----checking user name and password of subuser is exist or  not-----*/
 					{
 						st1=con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-						rs2=st1.executeQuery(login);
+						
+						Statement st2=con.createStatement();
+						ResultSet rs2=st2.executeQuery(loginc);
 						
 						ResultSet rs7=st1.executeQuery(submail);
 						rs7.next();
 						submailid=rs7.getString(1);
+						//System.out.println(submailid);
 						
 						while(rs2.next())
 						{
+							
 							if(user.equals(rs2.getString(1)))
 							{
-										flag1=1;
+									System.out.println("hi");
+									flag1=1;
 									if(password.equals(rs2.getString(2)))
 										{
 											flag1=2;
@@ -565,6 +607,23 @@ private static final String Syatem = null;
 											jo.put("forcep",rs2.getString(4));
 											jo.put("access", rs2.getInt(5));
 											jo.put("email",submailid);
+											
+											System.out.println("login");
+											String subuser1="update subuser set  forcelogin=? where childUserName=?";
+											
+											PreparedStatement ps1=con.prepareStatement(subuser1);
+											ps1.setString(1, "false");
+											ps1.setString(2, user);
+											
+											
+											
+											String login1="update logincontrol set forcelogin=? where username=?";
+											PreparedStatement ps2=con.prepareStatement(login1);
+											ps2.setString(1, "false");
+											ps2.setString(2, user);
+											
+											ps1.executeUpdate();
+											ps2.executeUpdate();
 											return jo.toString();   /*---if subuser name and password exist--*/
 											
 	
@@ -610,7 +669,7 @@ private static final String Syatem = null;
 					{
 						try
 						{
-							rs2.close();
+							//rs2.close();
 							con.close();
 						}
 						catch(Exception e)
@@ -746,7 +805,7 @@ private static final String Syatem = null;
 											{
 												if(rs.getString(4).equals("false")) /*--for checking account locked status--*/
 													{
-														jo.put("ckeck", "uyes");
+														jo.put("check", "uyes");
 														jo.put("accl", rs.getString(4));
 														jo.put("mnum", rs.getString(2));
 														jo.put("email", rs.getString(3));
@@ -755,7 +814,7 @@ private static final String Syatem = null;
 														return jo.toString(); /*-username exist and account not lock---*/
 													}
 	    		 
-													jo.put("ckeck", "uyes");
+													jo.put("check", "uyes");
 													jo.put("accl", "true");
 													jo.put("mnum", "null");
 													jo.put("email", "null");
@@ -793,7 +852,7 @@ private static final String Syatem = null;
 	 	
 			try
 				{
-						jo.put("ckeck", "uno");
+						jo.put("check", "uno");
 						jo.put("accl", "null");
 						jo.put("mnum", "null");
 						jo.put("email", "null");
@@ -837,7 +896,7 @@ private static final String Syatem = null;
 			String s="'"+user+"'";
 			String rg="update registration set pswd=? where subid=?";
 		
-			String lc="update logincontrol set pswd=? ,forcechgpwd=? where username="+s;
+			String lc="update logincontrol set pswd=? ,forcechgpwd=?, forcelogin=? where username="+s;
 		
 		
 			/*-------------------CHECKING USER EXIST OR NOT---------------------------*/
@@ -857,6 +916,7 @@ private static final String Syatem = null;
 						}
 				if(temp==0)
 				{
+					
 					jo.put("check", "unotexist");
 					return jo.toString();
 				}
@@ -865,10 +925,12 @@ private static final String Syatem = null;
 					}
 				catch(SQLException e)
 				{
+					System.out.println(e);
 					logger.error("In temp password service: error  : "+e+ "  at the time of checking user exist in register table or not");
 				}
 				catch(Exception e)
 				{
+					System.out.println(e);
 					logger.error("In temp password service: error  : "+e+ " at the time of checking user exist in register table or not");
 				}
 				finally
@@ -880,6 +942,7 @@ private static final String Syatem = null;
 					}
 					catch(Exception e)
 					{
+						System.out.println(e);
 						logger.error("In temp password service: error  : "+e+ "  at the time checking user exist in register table or not");
 					}
 				}
@@ -902,7 +965,8 @@ private static final String Syatem = null;
 	
 						fcp.setString(1, pass);
 						fcp.setString(2, "true");
-						//fcp.setString(3, username);
+						fcp.setString(3, "true");
+						//fcp.setString(4, user);
 	
 						ps.executeUpdate();
 						fcp.executeUpdate();
@@ -910,10 +974,12 @@ private static final String Syatem = null;
 					}
 					catch(SQLException e)
 					{
+						System.out.println(e);
 						logger.error("In temp Password service: error  : "+e+ "  at the time of set user name and password in registration and logincontrol table");
 					}
 					catch(Exception e)
 					{
+						System.out.println(e);
 						logger.error("In temp Password service: error  : "+e+ " at the time of set user name and password in registration and logincontrol table");
 					}
 				    finally
@@ -926,6 +992,7 @@ private static final String Syatem = null;
 				    	}
 				    	catch(Exception e)
 				    	{
+				    		System.out.println(e);
 				    		logger.error("In temp password service: error  : "+e+ "  at the time of set user name and passwors");
 				    	}
 				    }
@@ -968,12 +1035,12 @@ private static final String Syatem = null;
 						/*-------CHECKING FOR MAIN USER-----*/ 
 							while(rs.next())
 							{
-								if(rs.getString(1).equals(user))/*--Checking user name exist in registration table or not---*/
+								if(rs.getInt(1)==Integer.parseInt(user))/*--Checking user name exist in registration table or not---*/
 									{
 										//System.out.println("main");
 										 flag=1;
 										String rg="update registration set pswd=? where subid=?";
-										String lc="update logincontrol set pswd=? ,forcechgpwd=? where username=?";
+										String lc="update logincontrol set pswd=? ,forcechgpwd=? ,  forcelogin=? where username=?";
 	    		
 										PreparedStatement ps=null;
 										PreparedStatement fcp=null;
@@ -990,7 +1057,8 @@ private static final String Syatem = null;
 	    		
 											fcp.setString(1, pass);
 											fcp.setString(2, "false");
-											fcp.setString(3, user);
+											fcp.setString(3, "true");
+											fcp.setString(4, user);
 	    		
 											ps.executeUpdate();
 											fcp.executeUpdate();
@@ -1070,12 +1138,12 @@ private static final String Syatem = null;
 							PreparedStatement fcp1 = con.prepareStatement(log);
 
 							ps1.setString(1, pass);
-							ps1.setString(2, "false");
+							ps1.setString(2, "true");
 							ps1.setString(3, user);
 						
 							fcp1.setString(1, pass);
 							fcp1.setString(2, "false");
-							fcp1.setString(3, "false");
+							fcp1.setString(3, "true");
 							fcp1.setString(4, user);
 
 							ps1.executeUpdate();
@@ -1386,11 +1454,13 @@ private static final String Syatem = null;
 					}
 				catch(SQLException e)
 				{
+					System.out.println(e);
 					logger.error("In all sub user services: error  : "+e+ "  at the time of fetching all sub user");
 				}
 				catch(Exception e)
 					{
 						
+					System.out.println(e);
 					logger.error("In all sub user services: error at  : "+e+ " the time of fetching all sub user");
 						
 					}
@@ -1404,6 +1474,7 @@ private static final String Syatem = null;
 					}
 					catch(Exception e)
 					{
+						System.out.println(e);
 						logger.error("In all sub user services: error  : "+e+ "  at the time of fetching all sub user");
 					}
 				}
@@ -1472,10 +1543,10 @@ private static final String Syatem = null;
 								while(rs1.next())
 									if(rs1.getString(1).equals(username))
 									{ 
-										
-										if(rs1.getString(4).equals("false"))/*--when accl is not lock--*/
+										System.out.println("suser");
+										if(rs1.getString(3).equals("false"))/*--when accl is not lock--*/
 											{   flag=2;
-	    		
+											//System.out.println("suser");
 												jo.put("check","suexist");
 												jo.put("accl", "false");
 												jo.put("access", rs1.getString(5));
@@ -1488,10 +1559,12 @@ private static final String Syatem = null;
 					}
 				catch(SQLException e)
 				{
+					System.out.println(e);
 					logger.error("In get sub user access service: error  : "+e+ "  at the time checking of sub user detail");
 				}
 				catch(Exception e)
-				{   
+				{ 
+					System.out.println(e);
 					logger.error("In get sub user access service: error  : "+e+ " at the time checking of sub user detail");
 				}
 				finally
@@ -1507,6 +1580,7 @@ private static final String Syatem = null;
 					}
 					catch(Exception e)
 					{
+						System.out.println(e);
 						logger.error("In get sub user access service: error  : "+e+ "  at the time checking of sub user detail");
 					}
 				}
@@ -1525,6 +1599,7 @@ private static final String Syatem = null;
 						}
 						catch(Exception e)
 						{
+							System.out.println(e);
 							logger.error("In get sub user access service: error  : "+e+ " in JSON object when sub user exist but accl lock");		
 						}
 					}	
@@ -1690,10 +1765,12 @@ private static final String Syatem = null;
 				}
 				catch(SQLException e)
 				{
+					System.out.println(e);
 					logger.error("In Synch item service :error  : "+e+ "  at the time of selecting last item in item table");
 				}
 				catch(Exception e)
 				{
+					System.out.println(e);
 					logger.error("In Synch item service :error  : "+e+ " at the time of selecting last item in item table");
 				}
 				finally
@@ -1705,6 +1782,7 @@ private static final String Syatem = null;
 					}
 					catch(Exception e)
 					{
+						System.out.println(e);
 						logger.error("In Synch item service :error  : "+e+ "  at the time of selecting last item in item table");
 						
 					}
@@ -1835,19 +1913,19 @@ private static final String Syatem = null;
 			}
 			catch(JSONException e)
 			{
-				//System.out.println(e);
+				System.out.println(e);
 				logger.error("In Synch item service :error  : "+e+ "  at the time parsing data in item table");
 				flag=1;
 			}
 			catch(SQLException e)
 			{
-				//System.out.println(e);
+				System.out.println(e);
 				logger.error("In Synch item service :error  : "+e+ "  at the time of inserting data");
 				flag=1;
 			}
 			catch(Exception e)
 			{
-				//System.out.println(e);
+				System.out.println(e);
 				logger.error("In Synch item service :error  : "+e+ "  at the time of inserting data in item table");
 				flag=1;	
 				
@@ -1875,10 +1953,12 @@ private static final String Syatem = null;
 				}
 				catch(SQLException e)
 				{
+					System.out.println(e);
 					logger.error("In Synch item service :error  : "+e+ "  at the time of deleting data if synch failed");
 				}
 				catch(Exception e)
 	 			{
+					System.out.println(e);
 					logger.error("In Synch item service :error  : "+e+ " at the time of deleting data if synch failed");
 				}
 				finally
@@ -1890,6 +1970,7 @@ private static final String Syatem = null;
 					}
 					catch(Exception e)
 					{
+						System.out.println(e);
 						logger.error("In Synch item service :error  : "+e+ "  at the time of deleting data if synch failed");
 					}
 				}
@@ -2305,16 +2386,16 @@ private static final String Syatem = null;
 								}
 								return jo.toString();
 						}
-						//rs.previous();
+						rs.previous();
 							int count=0;
 						while(rs.next())
 						{
-							
+							System.out.println(rs.getString(3));
 							
 							if(rs.getString(1).equals(parent) &&( (dat2.compareTo(rs.getDate(2)))>0 && (dat1.compareTo(rs.getDate(2)))<0 ||(date1.equals(rs.getString(2)) || date2.equals(rs.getString(2)))))
-							{
+				 			{
 								tomail=rs.getString(3);
-								System.out.println(rs.getInt(1));
+								//System.out.println(rs.getString(3));
 								isdate=1;
 								count++;
 								break;
@@ -2348,7 +2429,50 @@ private static final String Syatem = null;
 					{
 						
 						
-						try
+						
+						/*  counting the number of files already in Excel_File folder*/
+						
+						File f = new File("C:\\Excel_File");
+		                int countfile = 0;
+		                for (File file : f.listFiles())
+		                {
+		                        if (file.isFile())
+		                        {
+		                                countfile++;
+		                        }
+		                }
+						
+						System.out.println(countfile);
+						
+						
+						/* deleting file from Excel_File when file is containing more than 10 files */
+							if(countfile>10)
+							{
+								try
+									{
+										Files.deleteIfExists(Paths.get("C:\\Excel_File"));
+									}
+									catch(NoSuchFileException e)
+									{
+										//System.out.println("No such file/directory exists");
+										logger.error("In Details of report Service: error: "+e);
+									}
+									catch(DirectoryNotEmptyException e)
+									{
+										//System.out.println("Directory is not empty.");
+										logger.error("In Details of report Service: error: "+e);
+									}
+									catch(IOException e)
+									{
+										//System.out.println("Invalid permissions.");
+										logger.error("In Details of report Service: error: "+e);
+									}
+						
+						
+								}
+						
+						
+						try			/* Generating Excel file */
 						{
 						Statement statement = con.createStatement();
 						
@@ -2485,7 +2609,7 @@ private static final String Syatem = null;
 								catch(Exception e)
 								{
 									sendstatus=1;
-									//System.out.println(e);
+									System.out.println(e);
 									logger.error("In Details of report Service: error: "+e);
 								}
 								multipart.addBodyPart(mimeBodyPart);
@@ -2494,12 +2618,12 @@ private static final String Syatem = null;
 
 								Transport.send(message);
 
-								//System.out.println("Email Sent Successfully");
+								System.out.println("Email Sent Successfully");
 
 							} catch (MessagingException e)
 							{
 								sendstatus=1;
-								//e.printStackTrace();
+								System.out.println(e); 
 								logger.error("In Details of report Service: error: "+e);
 
 							}
@@ -2521,6 +2645,7 @@ private static final String Syatem = null;
 					
 					
 					
+					
 					if(sendstatus==1)
 					{
 
@@ -2535,27 +2660,6 @@ private static final String Syatem = null;
 						}
 					}
 					
-					
-					/* deleting file which is created */
-					try
-			        {
-			            Files.deleteIfExists(Paths.get("C:\\Excel_File\\reportof"+parent+".xls"));
-			        }
-			        catch(NoSuchFileException e)
-			        {
-			            //System.out.println("No such file/directory exists");
-			            logger.error("In Details of report Service: error: "+e);
-			        }
-			        catch(DirectoryNotEmptyException e)
-			        {
-			            //System.out.println("Directory is not empty.");
-			            logger.error("In Details of report Service: error: "+e);
-			        }
-			        catch(IOException e)
-			        {
-			            //System.out.println("Invalid permissions.");
-			            logger.error("In Details of report Service: error: "+e);
-			        }
 					
 					
 					
@@ -2889,7 +2993,7 @@ private static final String Syatem = null;
 				Connection con=db.getConnection();
 				
 				int flag=0, inserthdr=0, insertline=0,fail=0;
-				//System.out.println(item);
+				System.out.println(item);
 				JSONObject jo=new JSONObject();
 				try
 				{
@@ -2948,10 +3052,12 @@ private static final String Syatem = null;
 				}
 				catch(SQLException e)
 				{
+					System.out.println(e);
 					logger.error("In Synch Invoice Service: error  : "+e+ " in creating ststement or resultset at the time of fetching max id invoice_hdr and invoice_line");
 				}
 				catch(Exception e)
 				{
+					System.out.println(e);
 					logger.error("In Synch Invoice Service: error : "+e+ "  at the time of fetching max id from invoice_hdr and invoice_line");
 				}
 				finally
@@ -2965,6 +3071,7 @@ private static final String Syatem = null;
 					}
 					catch(Exception e)
 					{
+						System.out.println(e);
 						logger.error("In Synch Invoice Service: error  : "+e+ " in closing statement or resultset at the time of fetching max id from both table");
 					}
 				}
@@ -3149,7 +3256,7 @@ private static final String Syatem = null;
 				 }
 				 catch(Exception e)
 				 {
-					 
+					 System.out.println(e); 
 					 fail=1;
 					 logger.error("In Synch Invoice Service: error  : "+e+ " at the time of synch invoice");
 				 }
@@ -3170,10 +3277,12 @@ private static final String Syatem = null;
 					}
 					catch(SQLException e)
 					{
+						System.out.println(e);
 						logger.error("In Synch Invoice Service: error  : "+e+ " in preparestatement at the time of deleting data if failed");
 					}
 					catch(Exception e)
 					{
+						System.out.println(e);
 						logger.error("In Synch Invoice Service: error : "+e+ "  at the time of deleting data if failed");
 					}
 					 
@@ -3191,10 +3300,12 @@ private static final String Syatem = null;
 					 }
 					 catch(SQLException e)
 					 {
+						 System.out.println(e);
 						 logger.error("In Synch Invoice Service: error : "+e+ "  in preparestatement at the time of deleting data if failed"); 
 					 }
 					 catch(Exception e)
 					 {
+						 System.out.println(e);
 						 logger.error("In Synch Invoice Service: error  : "+e+ "  at the time of deleting data if failed");
 					 }
 					 
@@ -3210,6 +3321,7 @@ private static final String Syatem = null;
 					 }
 					 catch(Exception e)
 					 {
+						 System.out.println(e);
 						 logger.error("In Synch Invoce Service: error: "+e); 
 					 }
 				 }

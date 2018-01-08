@@ -161,7 +161,9 @@ public class BusinessLogic {
 	{
 		
 		if(username.isEmpty())
+		{
 			return "You must enter username";
+		}
 		if(username.length()>10)
 			return "user name length can't be greater than 10 character";
 		
@@ -544,6 +546,7 @@ public class BusinessLogic {
 		
 		Implementation imp=new Implementation();
 		
+		System.out.println(item);
 		return imp.setInvoice_hdr(item);
 		
 		
@@ -570,6 +573,7 @@ public class BusinessLogic {
 	{
 		
 		Implementation imp=new Implementation();
+		logger.info("In Show Gst Service: You are trying to see Gst Detail");
 		return imp.getGstDetails();
 		
 	}
