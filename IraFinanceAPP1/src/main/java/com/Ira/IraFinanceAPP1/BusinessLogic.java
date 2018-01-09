@@ -668,6 +668,15 @@ public class BusinessLogic {
 		
 		
 	}
+
+/*22.============================================Max Invoice Id from invoice_hdr for a userid==========================*/
+
+	public String getInvoiceId(String user)
+	{
+		logger.info("In Max InvoiceId Service");
+		
+		return null;
+	}
 	
 	
 	

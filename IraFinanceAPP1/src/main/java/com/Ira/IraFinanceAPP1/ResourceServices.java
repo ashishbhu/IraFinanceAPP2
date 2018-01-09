@@ -308,7 +308,20 @@ public class ResourceServices {
 			   }
 		   		  
 			  
-			  
+/*22.============================================Max Invoice Id from invoice_hdr for a userid==========================*/
+			   
+			   
+			   
+			   @POST
+			   @Path("maxinvoiceid")
+			   @Consumes(MediaType.APPLICATION_JSON)
+			   @Produces(MediaType.APPLICATION_JSON)
+			   public String getInvoiceId(String user)
+			   {
+				   BusinessLogic bl=new BusinessLogic();
+				   return bl.getInvoiceId(user);
+				   
+			   }
 			  
 			  
 			  
